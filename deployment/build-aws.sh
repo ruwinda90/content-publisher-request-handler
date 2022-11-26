@@ -1,0 +1,2 @@
+docker build --build-arg configs=application-aws -t 476875854290.dkr.ecr.ap-southeast-1.amazonaws.com/content-pub-repo:content-publisher-request-handler-v1.0.0 .
+docker push 476875854290.dkr.ecr.ap-southeast-1.amazonaws.com/content-pub-repo:content-publisher-request-handler-v1.0.0
