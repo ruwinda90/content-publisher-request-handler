@@ -66,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-ui/**",
                         "/swagger-resources/**",
                         "/v2/api-docs",
-                        "/notification")
+                        "/websocket") // todo - Add auth for WS
                 .permitAll()
                 .anyRequest().authenticated().and()
 

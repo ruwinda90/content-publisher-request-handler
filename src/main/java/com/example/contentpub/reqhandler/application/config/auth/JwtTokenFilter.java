@@ -75,7 +75,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         /* JWT token headers are not required for these requests. */
         return request.getRequestURI().contains("/auth")
-                || request.getRequestURI().endsWith("/notification")
+                || request.getRequestURI().endsWith("/websocket") // todo - add auth for WS
                 || request.getRequestURI().contains("/swagger-ui");
     }
 
