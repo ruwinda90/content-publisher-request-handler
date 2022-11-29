@@ -62,11 +62,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         httpSecurity.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/auth/**",
-                        "/swagger-ui/**",
-                        "/swagger-resources/**",
-                        "/v2/api-docs",
-                        "/websocket") // todo - Add auth for WS
+                .antMatchers("/auth/**"
+                        ,"/swagger-ui/**"
+                        ,"/swagger-resources/**"
+                        ,"/v2/api-docs"
+                )
                 .permitAll()
                 .anyRequest().authenticated().and()
 
