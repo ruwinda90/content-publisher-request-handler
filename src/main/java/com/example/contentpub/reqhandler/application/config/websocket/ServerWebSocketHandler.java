@@ -1,7 +1,6 @@
 package com.example.contentpub.reqhandler.application.config.websocket;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.SubProtocolCapable;
@@ -17,35 +16,34 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Component
+@Slf4j
 public class ServerWebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable {
-
-    private static final Logger logger = LoggerFactory.getLogger(ServerWebSocketHandler.class);
 
     private final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        logger.info("Server connection opened");
+        log.info("Server connection opened");
         sessions.add(session);
 
         TextMessage message = new TextMessage("one-time message from server");
-        logger.info("Server sends: {}", message);
+        log.info("Server sends: {}", message);
         session.sendMessage(message);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        logger.info("Server connection closed: {}", status);
+        log.info("Server connection closed: {}", status);
         sessions.remove(session);
     }
 
     public void sendMessage(String message) throws IOException {
         for (WebSocketSession session : sessions) {
             if (session.isOpen()) {
-                logger.info("Server sends: {}", message);
+                log.info("Server sends: {}", message);
                 session.sendMessage(new TextMessage(message));
             } else {
-                logger.info("Connection not open");
+                log.info("Connection not open");
             }
         }
     }
@@ -53,16 +51,16 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String request = message.getPayload();
-        logger.info("Server received: {}", request);
+        log.info("Server received: {}", request);
 
         String response = String.format("response from server to '%s'", HtmlUtils.htmlEscape(request));
-        logger.info("Server sends: {}", response);
+        log.info("Server sends: {}", response);
         session.sendMessage(new TextMessage(response));
     }
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
-        logger.info("Server transport error: {}", exception.getMessage());
+        log.info("Server transport error: {}", exception.getMessage());
     }
 
     @Override
