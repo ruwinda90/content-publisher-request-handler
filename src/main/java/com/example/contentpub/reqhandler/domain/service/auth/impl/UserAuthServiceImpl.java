@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import static com.example.contentpub.reqhandler.domain.constants.ErrorCode.EMAIL_ALREADY_IN_USE;
 import static com.example.contentpub.reqhandler.domain.constants.CommonConstants.FAILURE;
 import static com.example.contentpub.reqhandler.domain.constants.CommonConstants.SUCCESS;
+import static com.example.contentpub.reqhandler.domain.constants.ErrorCode.EMAIL_NOT_FOUND;
 
 @Service
 public class UserAuthServiceImpl implements UserAuthService {
@@ -45,15 +46,24 @@ public class UserAuthServiceImpl implements UserAuthService {
 
         AuthResponseEntity domainResponse = new AuthResponseEntity();
 
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(authRequestEntity.getEmail(),
-                                                                      authRequestEntity.getPassword()));
+        try {
+            if (!userDao.existsByEmail(authRequestEntity.getEmail())) {
+                throw new DomainException(EMAIL_NOT_FOUND);
+            }
 
-        String token = tokenProvider.generateToken(authentication);
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(authRequestEntity.getEmail(),
+                            authRequestEntity.getPassword()));
+            String token = tokenProvider.generateToken(authentication);
 
-        domainResponse.setDescription(token);
-        domainResponse.setStatusCode(HttpStatus.OK.value());
-        domainResponse.setStatus(SUCCESS);
+            domainResponse.setDescription(token);
+            domainResponse.setStatusCode(HttpStatus.OK.value());
+            domainResponse.setStatus(SUCCESS);
+        } catch (DomainException ex) {
+            domainResponse.setStatusCode(ex.getHttpStatusCode());
+            domainResponse.setStatus(FAILURE);
+            domainResponse.setDescription(ex.getMessage());
+        }
 
         return domainResponse;
     }
