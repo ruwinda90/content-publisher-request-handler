@@ -20,6 +20,7 @@ public class BaseController {
     /**
      * The MethodArgumentNotValidException handler. MethodArgumentNotValidException gets thrown when the request params
      * are not valid.
+     *
      * @param exception the exception.
      * @return the error response.
      */
@@ -30,11 +31,12 @@ public class BaseController {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponse( message, "Request parameters not valid"));
+                .body(new CommonResponse(message, "Request parameters not valid"));
     }
 
     /**
      * The HttpMessageNotReadableException handler.
+     *
      * @param exception the exception.
      * @return the error response.
      */
@@ -43,12 +45,13 @@ public class BaseController {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponse( "Invalid request", "handleHttpMessageNotReadableExp"));
+                .body(new CommonResponse("Invalid request", "Could not read request body properly"));
     }
 
     /**
      * The MissingServletRequestParameterException handler. MissingServletRequestParameterException gets thrown when
      * there missing request parameters.
+     *
      * @param exception the exception.
      * @return the error response.
      */
@@ -59,7 +62,7 @@ public class BaseController {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponse( message, "Request parameters not valid"));
+                .body(new CommonResponse(message, "Request parameters not valid"));
     }
 
 }
