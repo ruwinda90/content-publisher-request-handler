@@ -6,6 +6,7 @@ import com.example.contentpub.reqhandler.application.dto.response.AuthResponse;
 import com.example.contentpub.reqhandler.application.dto.response.CommonResponse;
 import com.example.contentpub.reqhandler.domain.dto.AuthRequestEntity;
 import com.example.contentpub.reqhandler.domain.dto.AuthResponseEntity;
+import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity2;
 import com.example.contentpub.reqhandler.domain.service.auth.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,12 +38,16 @@ public class RestAuthController extends BaseController {
         AuthRequestEntity requestEntity = AuthRequestEntity.builder().email(authRequest.getEmail())
                                             .password(authRequest.getPassword()).build();
 
-        AuthResponseEntity domainResponse = userAuthService.createToken(requestEntity);
+        CommonResponseEntity2<AuthResponseEntity> domainResponse = userAuthService.createToken(requestEntity);
 
-        return ResponseEntity.status(domainResponse.getStatusCode())
-                .body(CommonResponse.<AuthResponse>builder()
-                    .description(domainResponse.getStatus())
-                        .data(new AuthResponse(domainResponse.getDescription())).build());
+        CommonResponse.CommonResponseBuilder<AuthResponse> responseBodyBuilder = CommonResponse
+                .<AuthResponse>builder().code(domainResponse.getCode()).description(domainResponse.getDescription());
+
+        if (domainResponse.getData() != null) {
+            responseBodyBuilder.data(new AuthResponse(domainResponse.getData().getAccessToken()));
+        }
+
+        return ResponseEntity.status(domainResponse.getHttpStatusCode()).body(responseBodyBuilder.build());
     }
 
     /**
@@ -56,10 +61,11 @@ public class RestAuthController extends BaseController {
         AuthRequestEntity requestEntity = AuthRequestEntity.builder().email(userRegRequest.getEmail())
                 .password(userRegRequest.getPassword()).build();
 
-        AuthResponseEntity domainResponse = userAuthService.createUser(requestEntity);
+        CommonResponseEntity2<String> domainResponse = userAuthService.createUser(requestEntity);
 
-        return ResponseEntity.status(domainResponse.getStatusCode())
+        return ResponseEntity.status(domainResponse.getHttpStatusCode())
                 .body(CommonResponse.<String>builder()
+                        .code(domainResponse.getCode())
                         .description(domainResponse.getDescription()).build());
     }
 

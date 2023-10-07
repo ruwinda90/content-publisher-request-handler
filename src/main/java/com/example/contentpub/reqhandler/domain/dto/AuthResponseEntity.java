@@ -11,10 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AuthResponseEntity {
 
-    private Integer statusCode;
-
-    private String status;
-
-    private String description;
+    private String accessToken;
 
 }

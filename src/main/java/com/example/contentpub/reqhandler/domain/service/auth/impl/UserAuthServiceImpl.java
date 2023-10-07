@@ -1,14 +1,15 @@
 package com.example.contentpub.reqhandler.domain.service.auth.impl;
 
+import com.example.contentpub.reqhandler.domain.constants.StatusCodes;
 import com.example.contentpub.reqhandler.domain.db.dao.UserDao;
 import com.example.contentpub.reqhandler.domain.dto.AuthRequestEntity;
 import com.example.contentpub.reqhandler.domain.dto.AuthResponseEntity;
+import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity2;
 import com.example.contentpub.reqhandler.domain.exception.DomainException;
 import com.example.contentpub.reqhandler.domain.service.auth.TokenProvider;
 import com.example.contentpub.reqhandler.domain.service.auth.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,10 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static com.example.contentpub.reqhandler.domain.constants.ErrorCode.EMAIL_ALREADY_IN_USE;
-import static com.example.contentpub.reqhandler.domain.constants.CommonConstants.FAILURE;
-import static com.example.contentpub.reqhandler.domain.constants.CommonConstants.SUCCESS;
-import static com.example.contentpub.reqhandler.domain.constants.ErrorCode.EMAIL_NOT_FOUND;
+import static com.example.contentpub.reqhandler.domain.constants.StatusCodes.EMAIL_ALREADY_IN_USE;
+import static com.example.contentpub.reqhandler.domain.constants.StatusCodes.EMAIL_NOT_FOUND;
 
 @Service
 public class UserAuthServiceImpl implements UserAuthService {
@@ -42,26 +41,26 @@ public class UserAuthServiceImpl implements UserAuthService {
     }
 
     @Override
-    public AuthResponseEntity createToken(AuthRequestEntity authRequestEntity) {
+    public CommonResponseEntity2<AuthResponseEntity> createToken(AuthRequestEntity authRequestEntity) {
 
-        AuthResponseEntity domainResponse = new AuthResponseEntity();
+        CommonResponseEntity2<AuthResponseEntity> domainResponse = new CommonResponseEntity2<>();
 
         try {
             if (!userDao.existsByEmail(authRequestEntity.getEmail())) {
                 throw new DomainException(EMAIL_NOT_FOUND);
             }
 
-            Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(authRequestEntity.getEmail(),
-                            authRequestEntity.getPassword()));
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestEntity.getEmail(), authRequestEntity.getPassword()));
             String token = tokenProvider.generateToken(authentication);
 
-            domainResponse.setStatusCode(HttpStatus.OK.value());
-            domainResponse.setStatus(SUCCESS);
-            domainResponse.setDescription(token);
+            domainResponse.setHttpStatusCode(StatusCodes.SUCCESS.getHttpStatus().value());
+            domainResponse.setCode(StatusCodes.SUCCESS.getCode());
+            domainResponse.setDescription(StatusCodes.SUCCESS.getDescription());
+            domainResponse.setData(new AuthResponseEntity(token));
+
         } catch (DomainException ex) {
-            domainResponse.setStatusCode(ex.getHttpStatusCode());
-            domainResponse.setStatus(FAILURE);
+            domainResponse.setHttpStatusCode(ex.getHttpStatus().value());
+            domainResponse.setCode(ex.getCode());
             domainResponse.setDescription(ex.getMessage());
         }
 
@@ -69,9 +68,9 @@ public class UserAuthServiceImpl implements UserAuthService {
     }
 
     @Override
-    public AuthResponseEntity createUser(AuthRequestEntity userRegRequestEntity) {
+    public CommonResponseEntity2<String> createUser(AuthRequestEntity userRegRequestEntity) {
 
-        AuthResponseEntity domainResponse = new AuthResponseEntity();
+        CommonResponseEntity2<String> domainResponse = new CommonResponseEntity2<>();
 
         try {
             if (userDao.existsByEmail(userRegRequestEntity.getEmail())) {
@@ -80,17 +79,17 @@ public class UserAuthServiceImpl implements UserAuthService {
 
             userDao.createUser(userRegRequestEntity);
 
-            domainResponse.setStatusCode(HttpStatus.CREATED.value());
-            domainResponse.setStatus(SUCCESS);
-            domainResponse.setDescription(SUCCESS);
+            domainResponse.setHttpStatusCode(StatusCodes.CREATED.getHttpStatus().value());
+            domainResponse.setCode(StatusCodes.CREATED.getCode());
+            domainResponse.setDescription(StatusCodes.CREATED.getDescription());
 
         } catch (DomainException ex) {
-            domainResponse.setStatusCode(ex.getHttpStatusCode());
-            domainResponse.setStatus(FAILURE);
+            domainResponse.setHttpStatusCode(ex.getHttpStatus().value());
+            domainResponse.setCode(ex.getCode());
             domainResponse.setDescription(ex.getMessage());
         } catch (Exception ex) {
-            domainResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            domainResponse.setStatus(FAILURE);
+            domainResponse.setHttpStatusCode(StatusCodes.INTERNAL_ERROR.getHttpStatus().value());
+            domainResponse.setCode(StatusCodes.INTERNAL_ERROR.getCode());
             domainResponse.setDescription(ex.getMessage());
         }
 
