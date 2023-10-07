@@ -82,6 +82,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 
             domainResponse.setStatusCode(HttpStatus.CREATED.value());
             domainResponse.setStatus(SUCCESS);
+            domainResponse.setDescription(SUCCESS);
 
         } catch (DomainException ex) {
             domainResponse.setStatusCode(ex.getHttpStatusCode());
@@ -90,6 +91,7 @@ public class UserAuthServiceImpl implements UserAuthService {
         } catch (Exception ex) {
             domainResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             domainResponse.setStatus(FAILURE);
+            domainResponse.setDescription(ex.getMessage());
         }
 
         return domainResponse;
