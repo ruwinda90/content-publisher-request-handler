@@ -56,9 +56,9 @@ public class UserAuthServiceImpl implements UserAuthService {
                             authRequestEntity.getPassword()));
             String token = tokenProvider.generateToken(authentication);
 
-            domainResponse.setDescription(token);
             domainResponse.setStatusCode(HttpStatus.OK.value());
             domainResponse.setStatus(SUCCESS);
+            domainResponse.setDescription(token);
         } catch (DomainException ex) {
             domainResponse.setStatusCode(ex.getHttpStatusCode());
             domainResponse.setStatus(FAILURE);
