@@ -42,7 +42,7 @@ public class RestAuthController extends BaseController {
         return ResponseEntity.status(domainResponse.getStatusCode())
                 .body(CommonResponse.<AuthResponse>builder()
                     .description(domainResponse.getStatus())
-                        .response(new AuthResponse(domainResponse.getDescription())).build());
+                        .data(new AuthResponse(domainResponse.getDescription())).build());
     }
 
     /**
@@ -59,7 +59,7 @@ public class RestAuthController extends BaseController {
         AuthResponseEntity domainResponse = userAuthService.createUser(requestEntity);
 
         return ResponseEntity.status(domainResponse.getStatusCode())
-                .body(CommonResponse.<String>builder().response(domainResponse.getStatus())
+                .body(CommonResponse.<String>builder().data(domainResponse.getStatus())
                         .description(domainResponse.getDescription()).build());
     }
 

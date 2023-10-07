@@ -11,8 +11,10 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommonResponse<T> {
 
+    private String code;
+
     private String description;
 
-    private T response;
+    private T data;
 
 }

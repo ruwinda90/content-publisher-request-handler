@@ -31,7 +31,7 @@ public class BaseController {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponse(message, "Request parameters not valid"));
+                .body(new CommonResponse(null, message, null));
     }
 
     /**
@@ -45,12 +45,12 @@ public class BaseController {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponse("Invalid request", "Could not read request body properly"));
+                .body(new CommonResponse(null, "Could not read request body properly", null));
     }
 
     /**
      * The MissingServletRequestParameterException handler. MissingServletRequestParameterException gets thrown when
-     * there missing request parameters.
+     * there are missing request parameters.
      *
      * @param exception the exception.
      * @return the error response.
@@ -62,7 +62,7 @@ public class BaseController {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponse(message, "Request parameters not valid"));
+                .body(new CommonResponse(null, message, null));
     }
 
 }

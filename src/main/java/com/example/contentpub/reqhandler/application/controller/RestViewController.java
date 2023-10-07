@@ -44,7 +44,7 @@ public class RestViewController extends BaseController {
 
         return ResponseEntity.status(domainResponse.getStatusCode())
                 .body(CommonResponse.<JSONObject>builder().description(domainResponse.getDescription())
-                                                          .response(domainResponse.getResponseBody())
+                                                          .data(domainResponse.getResponseBody())
                                                         .build());
     }
 
@@ -63,7 +63,7 @@ public class RestViewController extends BaseController {
 
         return ResponseEntity.status(domainResponse.getStatusCode())
                 .body(CommonResponse.<JSONObject>builder().description(domainResponse.getDescription())
-                        .response(domainResponse.getResponseBody())
+                        .data(domainResponse.getResponseBody())
                         .build());
     }
 
