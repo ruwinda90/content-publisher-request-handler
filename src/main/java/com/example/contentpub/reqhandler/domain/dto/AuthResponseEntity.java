@@ -13,4 +13,6 @@ public class AuthResponseEntity {
 
     private String accessToken;
 
+    private String refreshToken;
+
 }

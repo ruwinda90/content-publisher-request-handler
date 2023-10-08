@@ -10,6 +10,11 @@ public enum StatusCodes {
     CREATED("1000", "Created", HttpStatus.CREATED),
     EMAIL_ALREADY_IN_USE("2000", "Email already in use", HttpStatus.BAD_REQUEST),
     EMAIL_NOT_FOUND("2001", "Email not found", HttpStatus.BAD_REQUEST),
+    INVALID_CREDENTIALS("2002", "Username and password does not match", HttpStatus.UNAUTHORIZED),
+    REFRESH_TOKEN_NOT_FOUND("2001", "Refresh token not found", HttpStatus.UNAUTHORIZED),
+    REFRESH_COOKIE_NOT_FOUND("2001", "Refresh cookie not found", HttpStatus.UNAUTHORIZED),
+    REFRESH_TOKEN_EXPIRED("2002", "Refresh token is expired", HttpStatus.UNAUTHORIZED),
+    REFRESH_TOKEN_INVALID("2003", "Refresh token is not valid", HttpStatus.UNAUTHORIZED),
     INTERNAL_ERROR("5000", "Internal Error", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String code;

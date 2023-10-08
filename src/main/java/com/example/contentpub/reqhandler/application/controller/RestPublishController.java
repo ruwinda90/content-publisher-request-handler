@@ -7,10 +7,9 @@ import com.example.contentpub.reqhandler.domain.dto.RegPublisherRequestEntity;
 import com.example.contentpub.reqhandler.application.dto.request.ContentCreateRequest;
 import com.example.contentpub.reqhandler.application.dto.request.ContentEditRequest;
 import com.example.contentpub.reqhandler.application.dto.request.CreatePublisherRequest;
-import com.example.contentpub.reqhandler.domain.service.auth.JwtTokenUtil;
+import com.example.contentpub.reqhandler.domain.service.auth.impl.TokenUtilService;
 import com.example.contentpub.reqhandler.domain.service.publish.PublishService;
 import net.minidev.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,11 +25,14 @@ import static com.example.contentpub.reqhandler.domain.constants.AuthConstants.A
 @RequestMapping("/publisher")
 public class RestPublishController extends BaseController {
 
-    @Autowired
-    private PublishService publishService;
+    private final PublishService publishService;
+    private final TokenUtilService tokenUtilService;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    public RestPublishController(PublishService publishService, TokenUtilService tokenUtilService) {
+        this.publishService = publishService;
+        this.tokenUtilService = tokenUtilService;
+    }
+
 
     /**
      * Register a READER user as a WRITER user. This endpoint is only allowed for READER users.
@@ -43,7 +45,7 @@ public class RestPublishController extends BaseController {
     public ResponseEntity<CommonResponse<JSONObject>> createPublisher(@RequestBody @Valid CreatePublisherRequest createPublisherRequest,
                                                                       @RequestHeader(name = AUTHORIZATION) String authHeader) {
 
-        Integer userId = jwtTokenUtil.getUserIdFromHeaders(authHeader);
+        Integer userId = tokenUtilService.getUserIdFromAccessToken(authHeader.substring(7));
 
         RegPublisherRequestEntity requestEntity = RegPublisherRequestEntity.builder()
                 .userId(userId)
@@ -72,7 +74,7 @@ public class RestPublishController extends BaseController {
     public ResponseEntity<CommonResponse<JSONObject>> publishContent(@RequestBody @Valid ContentCreateRequest contentCreateRequest,
                                                      @RequestHeader(name = AUTHORIZATION) String authHeader) {
 
-        Integer userId = jwtTokenUtil.getUserIdFromHeaders(authHeader);
+        Integer userId = tokenUtilService.getUserIdFromAccessToken(authHeader.substring(7));
 
         PublishRequestEntity requestEntity = PublishRequestEntity.builder()
                 .title(contentCreateRequest.getTitle())
@@ -104,7 +106,7 @@ public class RestPublishController extends BaseController {
                                                     @RequestBody @Valid ContentEditRequest contentEditRequest,
                                                     @RequestHeader(name = AUTHORIZATION) String authHeader) {
 
-        Integer userId = jwtTokenUtil.getUserIdFromHeaders(authHeader); // Fetch user ID.
+        Integer userId = tokenUtilService.getUserIdFromAccessToken(authHeader.substring(7)); // Fetch user ID.
 
         PublishRequestEntity requestEntity = PublishRequestEntity.builder()
                 .contentId(contentId)
@@ -133,7 +135,7 @@ public class RestPublishController extends BaseController {
     public ResponseEntity<CommonResponse<JSONObject>> deleteContent(@PathVariable("id") Integer contentId,
                                                     @RequestHeader(name = AUTHORIZATION) String authHeader) {
 
-        Integer userId = jwtTokenUtil.getUserIdFromHeaders(authHeader);
+        Integer userId = tokenUtilService.getUserIdFromAccessToken(authHeader.substring(7));
 
         PublishRequestEntity requestEntity = PublishRequestEntity.builder()
                 .contentId(contentId)

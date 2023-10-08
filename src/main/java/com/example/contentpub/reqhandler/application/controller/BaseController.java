@@ -1,6 +1,8 @@
 package com.example.contentpub.reqhandler.application.controller;
 
 import com.example.contentpub.reqhandler.application.dto.response.CommonResponse;
+import com.example.contentpub.reqhandler.domain.constants.StatusCodes;
+import com.example.contentpub.reqhandler.domain.exception.DomainException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +65,22 @@ public class BaseController {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new CommonResponse(null, message, null));
+    }
+
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<CommonResponse<String>> handleDomainExp(DomainException exception) {
+
+        return ResponseEntity
+                .status(exception.getHttpStatus())
+                .body(new CommonResponse(exception.getCode(), exception.getMessage(), null));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<CommonResponse<String>> handleCommonExp(Exception exception) {
+
+        return ResponseEntity
+                .status(StatusCodes.INTERNAL_ERROR.getHttpStatus())
+                .body(new CommonResponse(StatusCodes.INTERNAL_ERROR.getCode(), exception.getMessage(), null));
     }
 
 }
