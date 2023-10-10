@@ -72,8 +72,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
-                .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                        .accessDeniedHandler(accessDenyHandlerEntryPoint));
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(accessDenyHandlerEntryPoint);
 
         // Add a filter to validate the tokens with every request.
         httpSecurity.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);

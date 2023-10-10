@@ -7,6 +7,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -75,6 +76,11 @@ public class BaseController {
                 .body(new CommonResponse(exception.getCode(), exception.getMessage(), null));
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<CommonResponse<String>> handleCommonExp(AccessDeniedException exception) {
+
+        throw exception;
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonResponse<String>> handleCommonExp(Exception exception) {
 
