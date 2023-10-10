@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.minidev.json.JSONObject;
+import org.springframework.lang.Nullable;
 
 @Getter
 @Setter
@@ -16,6 +17,7 @@ public class CommonResponseEntity {
 
     private String description; // Optional description.
 
+    @Nullable
     private JSONObject responseBody; // Response from inner service.
 
 }

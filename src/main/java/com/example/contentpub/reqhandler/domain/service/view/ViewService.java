@@ -1,8 +1,11 @@
 package com.example.contentpub.reqhandler.domain.service.view;
 
 import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
+import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity2;
 import com.example.contentpub.reqhandler.domain.dto.ViewRequestEntity;
+import com.example.contentpub.reqhandler.domain.exception.DomainException;
 import com.example.contentpub.reqhandler.external.util.rest.RestTemplateUtil;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -32,7 +35,7 @@ public class ViewService {
      * @param requestEntity the domain request entity.
      * @return the domain response.
      */
-    public CommonResponseEntity getContentList(ViewRequestEntity requestEntity) {
+    public CommonResponseEntity2<JSONObject> getContentList(ViewRequestEntity requestEntity) throws DomainException {
 
         Integer categoryId = requestEntity.getCategoryId();
 
@@ -45,7 +48,7 @@ public class ViewService {
         queryContentListUrl.queryParam("page", page);
         queryContentListUrl.queryParam("pageSize", pageSize);
 
-        return restTemplateUtil.getResponse(queryContentListUrl.build().toString(), HttpMethod.GET, null);
+        return restTemplateUtil.getResponse2(queryContentListUrl.build().toString(), HttpMethod.GET, null);
 
     }
 

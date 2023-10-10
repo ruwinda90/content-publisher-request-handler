@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 
 import static com.example.contentpub.reqhandler.domain.constants.AuthConstants.AUTHORITIES_KEY;
 import static com.example.contentpub.reqhandler.domain.constants.AuthConstants.USER_ID;
-import static com.example.contentpub.reqhandler.domain.constants.StatusCodes.REFRESH_TOKEN_EXPIRED;
-import static com.example.contentpub.reqhandler.domain.constants.StatusCodes.REFRESH_TOKEN_INVALID;
+import static com.example.contentpub.reqhandler.domain.constants.StatusCode.REFRESH_TOKEN_EXPIRED;
+import static com.example.contentpub.reqhandler.domain.constants.StatusCode.REFRESH_TOKEN_INVALID;
 
 @Component
 public class TokenUtilService {

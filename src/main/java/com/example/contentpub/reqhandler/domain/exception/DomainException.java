@@ -1,6 +1,6 @@
 package com.example.contentpub.reqhandler.domain.exception;
 
-import com.example.contentpub.reqhandler.domain.constants.StatusCodes;
+import com.example.contentpub.reqhandler.domain.constants.StatusCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -16,7 +16,7 @@ public class DomainException extends Exception {
         this.httpStatus = httpStatus;
     }
 
-    public DomainException(StatusCodes statusCode) {
+    public DomainException(StatusCode statusCode) {
         super(statusCode.getDescription());
         this.code = statusCode.getCode();
         this.httpStatus = statusCode.getHttpStatus();

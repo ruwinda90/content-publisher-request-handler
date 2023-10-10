@@ -1,6 +1,6 @@
 package com.example.contentpub.reqhandler.domain.service.auth.impl;
 
-import com.example.contentpub.reqhandler.domain.constants.StatusCodes;
+import com.example.contentpub.reqhandler.domain.constants.StatusCode;
 import com.example.contentpub.reqhandler.domain.db.dao.AuthDao;
 import com.example.contentpub.reqhandler.domain.db.entity.User;
 import com.example.contentpub.reqhandler.domain.dto.AuthRequestEntity;
@@ -19,7 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static com.example.contentpub.reqhandler.domain.constants.StatusCodes.*;
+import static com.example.contentpub.reqhandler.domain.constants.StatusCode.*;
 
 @Service
 public class UserAuthServiceImpl implements UserAuthService {
@@ -67,9 +67,9 @@ public class UserAuthServiceImpl implements UserAuthService {
 
         authDao.createRefreshToken(refreshTokenData.getUserId(), refreshToken);
 
-        domainResponse.setHttpStatusCode(StatusCodes.SUCCESS.getHttpStatus().value());
-        domainResponse.setCode(StatusCodes.SUCCESS.getCode());
-        domainResponse.setDescription(StatusCodes.SUCCESS.getDescription());
+        domainResponse.setHttpStatusCode(StatusCode.SUCCESS.getHttpStatus().value());
+        domainResponse.setCode(StatusCode.SUCCESS.getCode());
+        domainResponse.setDescription(StatusCode.SUCCESS.getDescription());
 
         AuthResponseEntity authResponseEntity = new AuthResponseEntity();
         authResponseEntity.setAccessToken(accessToken);
@@ -98,9 +98,9 @@ public class UserAuthServiceImpl implements UserAuthService {
         String accessToken = tokenUtilService.generateAccessToken(userData.getUsername(), userData.getId(),
                 userData.getAuthorities()).getToken();
 
-        domainResponse.setHttpStatusCode(StatusCodes.SUCCESS.getHttpStatus().value());
-        domainResponse.setCode(StatusCodes.SUCCESS.getCode());
-        domainResponse.setDescription(StatusCodes.SUCCESS.getDescription());
+        domainResponse.setHttpStatusCode(StatusCode.SUCCESS.getHttpStatus().value());
+        domainResponse.setCode(StatusCode.SUCCESS.getCode());
+        domainResponse.setDescription(StatusCode.SUCCESS.getDescription());
 
         AuthResponseEntity authResponseEntity = new AuthResponseEntity();
         authResponseEntity.setAccessToken(accessToken);
@@ -121,17 +121,17 @@ public class UserAuthServiceImpl implements UserAuthService {
 
             authDao.createUser(userRegRequestEntity);
 
-            domainResponse.setHttpStatusCode(StatusCodes.CREATED.getHttpStatus().value());
-            domainResponse.setCode(StatusCodes.CREATED.getCode());
-            domainResponse.setDescription(StatusCodes.CREATED.getDescription());
+            domainResponse.setHttpStatusCode(StatusCode.CREATED.getHttpStatus().value());
+            domainResponse.setCode(StatusCode.CREATED.getCode());
+            domainResponse.setDescription(StatusCode.CREATED.getDescription());
 
         } catch (DomainException ex) {
             domainResponse.setHttpStatusCode(ex.getHttpStatus().value());
             domainResponse.setCode(ex.getCode());
             domainResponse.setDescription(ex.getMessage());
         } catch (Exception ex) {
-            domainResponse.setHttpStatusCode(StatusCodes.INTERNAL_ERROR.getHttpStatus().value());
-            domainResponse.setCode(StatusCodes.INTERNAL_ERROR.getCode());
+            domainResponse.setHttpStatusCode(StatusCode.INTERNAL_ERROR.getHttpStatus().value());
+            domainResponse.setCode(StatusCode.INTERNAL_ERROR.getCode());
             domainResponse.setDescription(ex.getMessage());
         }
 
