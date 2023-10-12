@@ -40,6 +40,7 @@ public class RestAuthController extends BaseController {
      * @return A valid JWT if the credentials are valid, otherwise empty response with 401 HTTP status code.
      */
     @PostMapping("/authenticate")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<CommonResponse<AuthResponse>> authenticate(@RequestBody @Valid AuthRequest authRequest) throws DomainException {
 
         AuthRequestEntity requestEntity = AuthRequestEntity.builder().email(authRequest.getEmail())
@@ -87,6 +88,7 @@ public class RestAuthController extends BaseController {
      * @return a JSON object. The response parameter indicates whether the operation is success or failure.
      */
     @GetMapping("/refresh")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<CommonResponse<AuthResponse>> refreshAccessToken(
             @CookieValue(name = "refreshJwt", required = false) String refreshTokenCookie) throws DomainException {
 
