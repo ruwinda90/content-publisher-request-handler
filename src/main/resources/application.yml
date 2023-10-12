@@ -43,7 +43,7 @@ cookie:
 view:
   url: http://localhost:8081/api/v1.0/view/content
   default-values:
-    page: 0
+    page: 1
     page-size: 20
 
 # Publisher endpoint.
