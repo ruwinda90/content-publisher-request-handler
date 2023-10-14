@@ -1,7 +1,6 @@
 package com.example.contentpub.reqhandler.application.controller;
 
 import com.example.contentpub.reqhandler.application.dto.response.CommonResponse;
-import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
 import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity2;
 import com.example.contentpub.reqhandler.domain.dto.ViewRequestEntity;
 import com.example.contentpub.reqhandler.domain.exception.DomainException;
@@ -59,15 +58,17 @@ public class RestViewController extends BaseController {
      */
     @PreAuthorize("hasAnyAuthority({'USER_READER', 'USER_WRITER'})")
     @GetMapping("/content/{id}")
-    public ResponseEntity<CommonResponse<JSONObject>> getSingleContentItem(@PathVariable(name = "id") Integer contentId) {
+    public ResponseEntity<CommonResponse<JSONObject>> getSingleContentItem(@PathVariable(name = "id") Integer contentId) throws DomainException  {
 
         ViewRequestEntity requestEntity = ViewRequestEntity.builder().contentId(contentId).build();
 
-        CommonResponseEntity domainResponse = viewService.getSingleContentItem(requestEntity);
+        CommonResponseEntity2<JSONObject> domainResponse = viewService.getSingleContentItem(requestEntity);
 
-        return ResponseEntity.status(domainResponse.getStatusCode())
-                .body(CommonResponse.<JSONObject>builder().description(domainResponse.getDescription())
-                        .data(domainResponse.getResponseBody())
+        return ResponseEntity.status(domainResponse.getHttpStatusCode())
+                .body(CommonResponse.<JSONObject>builder()
+                        .code(domainResponse.getCode())
+                        .description(domainResponse.getDescription())
+                        .data(domainResponse.getData())
                         .build());
     }
 
