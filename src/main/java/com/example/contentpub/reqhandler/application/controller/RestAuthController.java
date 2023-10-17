@@ -68,7 +68,7 @@ public class RestAuthController extends BaseController {
      * @return a JSON object. The response parameter indicates whether the operation is success or failure.
      */
     @PostMapping("/register")
-    public ResponseEntity<CommonResponse<String>> createUser(@RequestBody @Valid UserRegRequest userRegRequest) {
+    public ResponseEntity<CommonResponse<String>> createUser(@RequestBody @Valid UserRegRequest userRegRequest) throws DomainException {
 
         AuthRequestEntity requestEntity = AuthRequestEntity.builder().email(userRegRequest.getEmail())
                 .password(userRegRequest.getPassword()).build();

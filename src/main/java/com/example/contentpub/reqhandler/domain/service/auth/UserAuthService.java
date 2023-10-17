@@ -12,6 +12,6 @@ public interface UserAuthService extends UserDetailsService {
 
     CommonResponseEntity<AuthResponseEntity> refresh(String refreshToken) throws DomainException;
 
-    CommonResponseEntity<String> createUser(AuthRequestEntity userRegRequestEntity);
+    CommonResponseEntity<String> createUser(AuthRequestEntity userRegRequestEntity) throws DomainException;
 
 }

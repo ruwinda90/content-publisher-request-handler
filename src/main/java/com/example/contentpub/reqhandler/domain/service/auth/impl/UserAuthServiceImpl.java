@@ -110,30 +110,19 @@ public class UserAuthServiceImpl implements UserAuthService {
     }
 
     @Override
-    public CommonResponseEntity<String> createUser(AuthRequestEntity userRegRequestEntity) {
+    public CommonResponseEntity<String> createUser(AuthRequestEntity userRegRequestEntity) throws DomainException {
 
         CommonResponseEntity<String> domainResponse = new CommonResponseEntity<>();
 
-        try {
-            if (authDao.userExistsByEmail(userRegRequestEntity.getEmail())) {
-                throw new DomainException(EMAIL_ALREADY_IN_USE);
-            }
-
-            authDao.createUser(userRegRequestEntity);
-
-            domainResponse.setHttpStatusCode(StatusCode.CREATED.getHttpStatus().value());
-            domainResponse.setCode(StatusCode.CREATED.getCode());
-            domainResponse.setDescription(StatusCode.CREATED.getDescription());
-
-        } catch (DomainException ex) {
-            domainResponse.setHttpStatusCode(ex.getHttpStatus().value());
-            domainResponse.setCode(ex.getCode());
-            domainResponse.setDescription(ex.getMessage());
-        } catch (Exception ex) {
-            domainResponse.setHttpStatusCode(StatusCode.INTERNAL_ERROR.getHttpStatus().value());
-            domainResponse.setCode(StatusCode.INTERNAL_ERROR.getCode());
-            domainResponse.setDescription(ex.getMessage());
+        if (authDao.userExistsByEmail(userRegRequestEntity.getEmail())) {
+            throw new DomainException(EMAIL_ALREADY_IN_USE);
         }
+
+        authDao.createUser(userRegRequestEntity);
+
+        domainResponse.setHttpStatusCode(StatusCode.CREATED.getHttpStatus().value());
+        domainResponse.setCode(StatusCode.CREATED.getCode());
+        domainResponse.setDescription(StatusCode.CREATED.getDescription());
 
         return domainResponse;
     }
