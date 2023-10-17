@@ -1,10 +1,9 @@
 package com.example.contentpub.reqhandler.domain.service.publish;
 
-import com.example.contentpub.reqhandler.domain.dto.CommonContentRequestBody;
-import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
-import com.example.contentpub.reqhandler.domain.dto.PublishRequestEntity;
-import com.example.contentpub.reqhandler.domain.dto.RegPublisherRequestEntity;
+import com.example.contentpub.reqhandler.domain.dto.*;
+import com.example.contentpub.reqhandler.domain.exception.DomainException;
 import com.example.contentpub.reqhandler.external.util.rest.RestTemplateUtil;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -28,10 +27,11 @@ public class PublishService {
 
     /**
      * Prepare the REST API to call the internal microservice and create a new writer user.
+     *
      * @param requestEntity the domain request entity.
      * @return the domain response.
      */
-    public CommonResponseEntity createPublisher(RegPublisherRequestEntity requestEntity) {
+    public CommonResponseEntity<JSONObject> createPublisher(RegPublisherRequestEntity requestEntity) throws DomainException {
 
         UriComponentsBuilder createPublisherUrl = UriComponentsBuilder.fromUriString(createPublisherUrlTemplate);
 
@@ -41,10 +41,11 @@ public class PublishService {
 
     /**
      * Prepare the REST API to call the internal microservice and create a new content.
+     *
      * @param requestEntity the domain request entity.
      * @return the domain response.
      */
-    public CommonResponseEntity publishContent(PublishRequestEntity requestEntity) {
+    public CommonResponseEntity<JSONObject> publishContent(PublishRequestEntity requestEntity) throws DomainException {
 
         CommonContentRequestBody requestBody = CommonContentRequestBody.builder()
                 .title(requestEntity.getTitle())
@@ -59,10 +60,11 @@ public class PublishService {
 
     /**
      * Prepare the REST API to call the internal microservice and update an existing content.
+     *
      * @param requestEntity the domain request entity.
      * @return the domain response.
      */
-    public CommonResponseEntity updateContent(PublishRequestEntity requestEntity) {
+    public CommonResponseEntity<JSONObject> updateContent(PublishRequestEntity requestEntity) throws DomainException {
 
         CommonContentRequestBody requestBody = CommonContentRequestBody.builder()
                 .title(requestEntity.getTitle())
@@ -77,10 +79,11 @@ public class PublishService {
 
     /**
      * Prepare the REST API to call the internal microservice and delete an existing content.
+     *
      * @param requestEntity the domain request entity.
      * @return the domain response.
      */
-    public CommonResponseEntity deleteContent(PublishRequestEntity requestEntity) {
+    public CommonResponseEntity<JSONObject> deleteContent(PublishRequestEntity requestEntity) throws DomainException {
 
         UriComponentsBuilder publishContentUrl = UriComponentsBuilder.fromUriString(publishContentUrlTemplate);
         publishContentUrl.path("/" + requestEntity.getContentId());

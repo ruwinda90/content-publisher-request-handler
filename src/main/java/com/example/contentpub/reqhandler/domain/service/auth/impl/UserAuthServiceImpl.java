@@ -5,7 +5,7 @@ import com.example.contentpub.reqhandler.domain.db.dao.AuthDao;
 import com.example.contentpub.reqhandler.domain.db.entity.User;
 import com.example.contentpub.reqhandler.domain.dto.AuthRequestEntity;
 import com.example.contentpub.reqhandler.domain.dto.AuthResponseEntity;
-import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity2;
+import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
 import com.example.contentpub.reqhandler.domain.dto.TokenData;
 import com.example.contentpub.reqhandler.domain.exception.DomainException;
 import com.example.contentpub.reqhandler.domain.service.auth.UserAuthService;
@@ -41,9 +41,9 @@ public class UserAuthServiceImpl implements UserAuthService {
     }
 
     @Override
-    public CommonResponseEntity2<AuthResponseEntity> loginUser(AuthRequestEntity authRequestEntity) throws DomainException {
+    public CommonResponseEntity<AuthResponseEntity> loginUser(AuthRequestEntity authRequestEntity) throws DomainException {
 
-        CommonResponseEntity2<AuthResponseEntity> domainResponse = new CommonResponseEntity2<>();
+        CommonResponseEntity<AuthResponseEntity> domainResponse = new CommonResponseEntity<>();
 
         if (!authDao.userExistsByEmail(authRequestEntity.getEmail())) {
             throw new DomainException(EMAIL_NOT_FOUND);
@@ -80,7 +80,7 @@ public class UserAuthServiceImpl implements UserAuthService {
     }
 
     @Override
-    public CommonResponseEntity2<AuthResponseEntity> refresh(String refreshToken) throws DomainException {
+    public CommonResponseEntity<AuthResponseEntity> refresh(String refreshToken) throws DomainException {
 
         // is the token valid
         // - not tampered, user ID matches
@@ -91,7 +91,7 @@ public class UserAuthServiceImpl implements UserAuthService {
             throw new DomainException(REFRESH_COOKIE_NOT_FOUND);
         }
 
-        CommonResponseEntity2<AuthResponseEntity> domainResponse = new CommonResponseEntity2<>();
+        CommonResponseEntity<AuthResponseEntity> domainResponse = new CommonResponseEntity<>();
 
         String userName = tokenUtilService.validateRefreshToken(refreshToken);
         User userData = authDao.findUserByEmail(userName);
@@ -110,9 +110,9 @@ public class UserAuthServiceImpl implements UserAuthService {
     }
 
     @Override
-    public CommonResponseEntity2<String> createUser(AuthRequestEntity userRegRequestEntity) {
+    public CommonResponseEntity<String> createUser(AuthRequestEntity userRegRequestEntity) {
 
-        CommonResponseEntity2<String> domainResponse = new CommonResponseEntity2<>();
+        CommonResponseEntity<String> domainResponse = new CommonResponseEntity<>();
 
         try {
             if (authDao.userExistsByEmail(userRegRequestEntity.getEmail())) {

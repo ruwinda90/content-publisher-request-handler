@@ -1,7 +1,6 @@
 package com.example.contentpub.reqhandler.external.util.rest;
 
 import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
-import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity2;
 import com.example.contentpub.reqhandler.domain.exception.DomainException;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -17,8 +16,6 @@ import java.util.LinkedHashMap;
 
 import static com.example.contentpub.reqhandler.domain.constants.StatusCode.BACKEND_RESP_PARSE_FAILURE;
 import static com.example.contentpub.reqhandler.domain.constants.StatusCode.BACKEND_TIMEOUT;
-import static com.example.contentpub.reqhandler.external.constant.RestConstants.PARSE_FAILURE_DESCRIPTION;
-import static com.example.contentpub.reqhandler.external.constant.RestConstants.TIMEOUT_FAILURE;
 
 /**
  * The RestTemplateUtil class invokes REST APIs to communicate with other microservices.
@@ -29,23 +26,32 @@ public class RestTemplateUtil {
     @Autowired
     private RestTemplate restTemplate;
 
-    public <T> CommonResponseEntity2<JSONObject> getResponse2(String url, HttpMethod method, T requestBody) throws DomainException {
+    /**
+     * Send an API to backend microservice(s) and process the response.
+     *
+     * @param url         the API URL.
+     * @param method      the REST method.
+     * @param requestBody the request body.
+     * @param <T>         the type of the request body.
+     * @return the processed domain response.
+     */
+    public <T> CommonResponseEntity<JSONObject> getResponse(String url, HttpMethod method, T requestBody) throws DomainException {
 
-        CommonResponseEntity2<JSONObject> domainResponse;
+        CommonResponseEntity<JSONObject> domainResponse;
 
         try {
             HttpEntity<?> httpEntity = (requestBody == null) ? httpEntityGenerator() : httpEntityGenerator(requestBody);
 
             ResponseEntity<JSONObject> response = restTemplate.exchange(url, method, httpEntity, JSONObject.class);
 
-            domainResponse = new CommonResponseEntity2<>();
+            domainResponse = new CommonResponseEntity<>();
             domainResponse.setHttpStatusCode(response.getStatusCodeValue());
             domainResponse.setCode(response.getBody().getAsString("code"));
             domainResponse.setDescription(response.getBody().getAsString("description"));
             domainResponse.setData(new JSONObject((LinkedHashMap) response.getBody().getOrDefault("data", new LinkedHashMap<>())));
 
         } catch (HttpStatusCodeException ex) {
-            domainResponse = handleInvalidStatusCodes2(ex);
+            domainResponse = handleInvalidStatusCodes(ex);
         } catch (ResourceAccessException ex) {
             throw new DomainException(BACKEND_TIMEOUT);
         }
@@ -54,45 +60,14 @@ public class RestTemplateUtil {
     }
 
     /**
-     * Send an API to backend microservice(s) and process the response.
-     * @param url the API URL.
-     * @param method the REST method.
-     * @param requestBody the request body.
-     * @return the processed domain response.
-     * @param <T> the type of the request body.
-     */
-    public <T> CommonResponseEntity getResponse(String url, HttpMethod method, T requestBody) {
-
-        CommonResponseEntity domainResponse;
-
-        try {
-            HttpEntity<?> httpEntity = (requestBody == null) ? httpEntityGenerator() : httpEntityGenerator(requestBody);
-
-            ResponseEntity<JSONObject> response = restTemplate.exchange(url, method, httpEntity, JSONObject.class);
-
-            domainResponse = new CommonResponseEntity();
-            domainResponse.setStatusCode(response.getStatusCodeValue());
-            domainResponse.setResponseBody(response.getBody());
-
-        } catch (HttpStatusCodeException ex) {
-            domainResponse = handleInvalidStatusCodes(ex);
-        } catch (ResourceAccessException ex) {
-            domainResponse = new CommonResponseEntity();
-            domainResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            domainResponse.setDescription(TIMEOUT_FAILURE);
-        }
-
-        return domainResponse;
-    }
-
-    /**
      * Handle 4xx and 5xx invalid status codes given by backend microservices.
+     *
      * @param exception the exception thrown by the restTemplate.
      * @return the processed domain response.
      */
-    private CommonResponseEntity2<JSONObject> handleInvalidStatusCodes2(HttpStatusCodeException exception) throws DomainException {
+    private CommonResponseEntity<JSONObject> handleInvalidStatusCodes(HttpStatusCodeException exception) throws DomainException {
 
-        CommonResponseEntity2<JSONObject> domainResponse = new CommonResponseEntity2<>();
+        CommonResponseEntity<JSONObject> domainResponse = new CommonResponseEntity<>();
         domainResponse.setHttpStatusCode(exception.getRawStatusCode());
 
         try {
@@ -110,37 +85,20 @@ public class RestTemplateUtil {
         return domainResponse;
     }
 
-    private CommonResponseEntity handleInvalidStatusCodes(HttpStatusCodeException exception) {
-
-        CommonResponseEntity domainResponse = new CommonResponseEntity();
-        domainResponse.setStatusCode(exception.getRawStatusCode());
-
-        try {
-            String responseAsString = exception.getResponseBodyAsString();
-            JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
-            JSONObject responseBody = (JSONObject) parser.parse(responseAsString);
-            domainResponse.setResponseBody(responseBody);
-
-        } catch (ParseException parseException) {
-            domainResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            domainResponse.setDescription(PARSE_FAILURE_DESCRIPTION);
-        }
-
-        return domainResponse;
-    }
-
     /**
      * Generate HTTP entity object for the request.
+     *
      * @param object the request body of the request.
+     * @param <T>    the type of the request body.
      * @return the HTTP entity to be sent.
-     * @param <T> the type of the request body.
      */
-    private  <T> HttpEntity<T> httpEntityGenerator(T object) {
+    private <T> HttpEntity<T> httpEntityGenerator(T object) {
         return new HttpEntity<>(object, httpHeaderGenerator());
     }
 
     /**
      * Generate HTTP entity object for the request when there is no request body.
+     *
      * @return the HTTP entity to be sent.
      */
     private HttpEntity<String> httpEntityGenerator() {
@@ -149,6 +107,7 @@ public class RestTemplateUtil {
 
     /**
      * Generate HTTP headers for the API request.
+     *
      * @return the generated headers.
      */
     private HttpHeaders httpHeaderGenerator() {

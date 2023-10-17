@@ -6,7 +6,7 @@ import com.example.contentpub.reqhandler.application.dto.response.AuthResponse;
 import com.example.contentpub.reqhandler.application.dto.response.CommonResponse;
 import com.example.contentpub.reqhandler.domain.dto.AuthRequestEntity;
 import com.example.contentpub.reqhandler.domain.dto.AuthResponseEntity;
-import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity2;
+import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
 import com.example.contentpub.reqhandler.domain.exception.DomainException;
 import com.example.contentpub.reqhandler.domain.service.auth.UserAuthService;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,7 +46,7 @@ public class RestAuthController extends BaseController {
         AuthRequestEntity requestEntity = AuthRequestEntity.builder().email(authRequest.getEmail())
                 .password(authRequest.getPassword()).build();
 
-        CommonResponseEntity2<AuthResponseEntity> domainResponse = userAuthService.loginUser(requestEntity);
+        CommonResponseEntity<AuthResponseEntity> domainResponse = userAuthService.loginUser(requestEntity);
 
         ResponseCookie cookie = ResponseCookie.from("refreshJwt",
                         domainResponse.getData().getRefreshToken()).path("/api/v1.0/auth/refresh")
@@ -73,7 +73,7 @@ public class RestAuthController extends BaseController {
         AuthRequestEntity requestEntity = AuthRequestEntity.builder().email(userRegRequest.getEmail())
                 .password(userRegRequest.getPassword()).build();
 
-        CommonResponseEntity2<String> domainResponse = userAuthService.createUser(requestEntity);
+        CommonResponseEntity<String> domainResponse = userAuthService.createUser(requestEntity);
 
         return ResponseEntity.status(domainResponse.getHttpStatusCode())
                 .body(CommonResponse.<String>builder()
@@ -92,7 +92,7 @@ public class RestAuthController extends BaseController {
     public ResponseEntity<CommonResponse<AuthResponse>> refreshAccessToken(
             @CookieValue(name = "refreshJwt", required = false) String refreshTokenCookie) throws DomainException {
 
-        CommonResponseEntity2<AuthResponseEntity> domainResponse = userAuthService.refresh(refreshTokenCookie);
+        CommonResponseEntity<AuthResponseEntity> domainResponse = userAuthService.refresh(refreshTokenCookie);
 
         return ResponseEntity.status(domainResponse.getHttpStatusCode())
                 .body(CommonResponse.<AuthResponse>builder()
