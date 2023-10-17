@@ -14,7 +14,6 @@ import java.util.Optional;
 
 @Service
 public class AuthDao {
-
     private final UserRepo userRepo;
     private final RefreshTokenRepo refreshTokenRepo;
     private final PasswordEncoder bcryptEncoder;

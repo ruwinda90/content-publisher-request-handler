@@ -4,6 +4,7 @@ import com.example.contentpub.reqhandler.application.dto.request.AuthRequest;
 import com.example.contentpub.reqhandler.application.dto.request.UserRegRequest;
 import com.example.contentpub.reqhandler.application.dto.response.AuthResponse;
 import com.example.contentpub.reqhandler.application.dto.response.CommonResponse;
+import com.example.contentpub.reqhandler.application.dto.response.RefreshResponse;
 import com.example.contentpub.reqhandler.domain.dto.AuthRequestEntity;
 import com.example.contentpub.reqhandler.domain.dto.AuthResponseEntity;
 import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
@@ -58,7 +59,7 @@ public class RestAuthController extends BaseController {
                 .body(CommonResponse.<AuthResponse>builder()
                         .code(domainResponse.getCode())
                         .description(domainResponse.getDescription())
-                        .data(new AuthResponse(domainResponse.getData().getAccessToken())).build());
+                        .data(new AuthResponse(domainResponse.getData().getAccessToken(), domainResponse.getData().getWriterId())).build());
     }
 
     /**
@@ -89,15 +90,15 @@ public class RestAuthController extends BaseController {
      */
     @GetMapping("/refresh")
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
-    public ResponseEntity<CommonResponse<AuthResponse>> refreshAccessToken(
+    public ResponseEntity<CommonResponse<RefreshResponse>> refreshAccessToken(
             @CookieValue(name = "refreshJwt", required = false) String refreshTokenCookie) throws DomainException {
 
         CommonResponseEntity<AuthResponseEntity> domainResponse = userAuthService.refresh(refreshTokenCookie);
 
         return ResponseEntity.status(domainResponse.getHttpStatusCode())
-                .body(CommonResponse.<AuthResponse>builder()
+                .body(CommonResponse.<RefreshResponse>builder()
                         .code(domainResponse.getCode())
                         .description(domainResponse.getDescription())
-                        .data(new AuthResponse(domainResponse.getData().getAccessToken())).build());
+                        .data(new RefreshResponse(domainResponse.getData().getAccessToken())).build());
     }
 }

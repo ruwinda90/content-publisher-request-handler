@@ -2,11 +2,9 @@ package com.example.contentpub.reqhandler.domain.service.auth.impl;
 
 import com.example.contentpub.reqhandler.domain.constants.StatusCode;
 import com.example.contentpub.reqhandler.domain.db.dao.AuthDao;
+import com.example.contentpub.reqhandler.domain.db.dao.WriterDao;
 import com.example.contentpub.reqhandler.domain.db.entity.User;
-import com.example.contentpub.reqhandler.domain.dto.AuthRequestEntity;
-import com.example.contentpub.reqhandler.domain.dto.AuthResponseEntity;
-import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
-import com.example.contentpub.reqhandler.domain.dto.TokenData;
+import com.example.contentpub.reqhandler.domain.dto.*;
 import com.example.contentpub.reqhandler.domain.exception.DomainException;
 import com.example.contentpub.reqhandler.domain.service.auth.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +24,9 @@ public class UserAuthServiceImpl implements UserAuthService {
 
     @Autowired
     private AuthDao authDao;
+
+    @Autowired
+    private WriterDao writerDao;
 
     @Autowired
     @Lazy
@@ -51,18 +52,16 @@ public class UserAuthServiceImpl implements UserAuthService {
 
         Authentication authentication;
         try {
-            authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(authRequestEntity.getEmail(),
-                            authRequestEntity.getPassword()));
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestEntity.getEmail(), authRequestEntity.getPassword()));
         } catch (BadCredentialsException ex) {
             throw new DomainException(INVALID_CREDENTIALS);
         }
 
-        String accessToken = tokenUtilService.generateAccessToken(authentication.getName(),
-                ((User) authentication.getPrincipal()).getId(), authentication.getAuthorities()).getToken();
+        Long writerId = writerDao.findWriterId(authRequestEntity.getEmail());
 
-        TokenData refreshTokenData = tokenUtilService.generateRefreshToken(authentication.getName(),
-                ((User) authentication.getPrincipal()).getId());
+        String accessToken = tokenUtilService.generateAccessToken(authentication.getName(), ((User) authentication.getPrincipal()).getId(), authentication.getAuthorities()).getToken();
+
+        TokenData refreshTokenData = tokenUtilService.generateRefreshToken(authentication.getName(), ((User) authentication.getPrincipal()).getId());
         String refreshToken = refreshTokenData.getToken();
 
         authDao.createRefreshToken(refreshTokenData.getUserId(), refreshToken);
@@ -74,6 +73,7 @@ public class UserAuthServiceImpl implements UserAuthService {
         AuthResponseEntity authResponseEntity = new AuthResponseEntity();
         authResponseEntity.setAccessToken(accessToken);
         authResponseEntity.setRefreshToken(refreshToken);
+        authResponseEntity.setWriterId(writerId);
         domainResponse.setData(authResponseEntity);
 
         return domainResponse;
@@ -95,8 +95,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 
         String userName = tokenUtilService.validateRefreshToken(refreshToken);
         User userData = authDao.findUserByEmail(userName);
-        String accessToken = tokenUtilService.generateAccessToken(userData.getUsername(), userData.getId(),
-                userData.getAuthorities()).getToken();
+        String accessToken = tokenUtilService.generateAccessToken(userData.getUsername(), userData.getId(), userData.getAuthorities()).getToken();
 
         domainResponse.setHttpStatusCode(StatusCode.SUCCESS.getHttpStatus().value());
         domainResponse.setCode(StatusCode.SUCCESS.getCode());

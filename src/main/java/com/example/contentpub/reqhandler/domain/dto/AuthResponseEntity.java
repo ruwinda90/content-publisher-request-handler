@@ -15,4 +15,6 @@ public class AuthResponseEntity {
 
     private String refreshToken;
 
+    private Long writerId;
+
 }
