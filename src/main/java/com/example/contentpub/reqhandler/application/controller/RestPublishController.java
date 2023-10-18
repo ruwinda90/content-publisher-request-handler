@@ -24,6 +24,7 @@ import static com.example.contentpub.reqhandler.domain.constants.AuthConstants.A
  */
 @RestController
 @RequestMapping("/publisher")
+@CrossOrigin(origins = "http://localhost:3000")
 public class RestPublishController extends BaseController {
 
     private final PublishService publishService;
