@@ -48,7 +48,9 @@ public class RestTemplateUtil {
             domainResponse.setHttpStatusCode(response.getStatusCodeValue());
             domainResponse.setCode(response.getBody().getAsString("code"));
             domainResponse.setDescription(response.getBody().getAsString("description"));
-            domainResponse.setData(new JSONObject((LinkedHashMap) response.getBody().getOrDefault("data", new LinkedHashMap<>())));
+            domainResponse.setData(response.getBody().get("data") == null ?
+                    null :
+                    new JSONObject((LinkedHashMap) response.getBody().get("data")));
 
         } catch (HttpStatusCodeException ex) {
             domainResponse = handleInvalidStatusCodes(ex);
@@ -76,7 +78,9 @@ public class RestTemplateUtil {
             JSONObject responseBody = (JSONObject) parser.parse(responseAsString);
             domainResponse.setCode(responseBody.getAsString("code"));
             domainResponse.setDescription(responseBody.getAsString("description"));
-            domainResponse.setData(new JSONObject((LinkedHashMap) responseBody.getOrDefault("data", new LinkedHashMap<>())));
+            domainResponse.setData(responseBody.get("data") == null ?
+                    null :
+                    new JSONObject((LinkedHashMap) responseBody.get("data")));
 
         } catch (ParseException parseException) {
             throw new DomainException(BACKEND_RESP_PARSE_FAILURE);
