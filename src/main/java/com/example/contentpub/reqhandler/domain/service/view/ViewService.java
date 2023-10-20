@@ -46,7 +46,10 @@ public class ViewService {
         Integer pageSize = (requestEntity.getPageSize() != null) ? requestEntity.getPageSize() : defaultPageSize;
 
         UriComponentsBuilder queryContentListUrl = UriComponentsBuilder.fromUriString(viewContentUrlTemplate);
-        queryContentListUrl.queryParam("categoryId", categoryId);
+
+        if (categoryId != null) {
+            queryContentListUrl.queryParam("categoryId", categoryId);
+        }
         queryContentListUrl.queryParam("page", page);
         queryContentListUrl.queryParam("pageSize", pageSize);
 

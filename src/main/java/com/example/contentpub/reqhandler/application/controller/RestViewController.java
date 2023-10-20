@@ -31,7 +31,7 @@ public class RestViewController extends BaseController {
      */
     @PreAuthorize("hasAnyAuthority({'USER_READER', 'USER_WRITER'})")
     @GetMapping("/content")
-    public ResponseEntity<CommonResponse<JSONObject>> getContentList(@RequestParam(name = "categoryId") Integer categoryId,
+    public ResponseEntity<CommonResponse<JSONObject>> getContentList(@RequestParam(name = "categoryId", required = false) Integer categoryId,
                                                                      @RequestParam(name = "page", required = false) Integer page,
                                                                      @RequestParam(name = "pageSize", required = false) Integer pageSize) throws DomainException {
 
