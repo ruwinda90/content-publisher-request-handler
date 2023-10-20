@@ -41,7 +41,10 @@ cookie:
 
 # Viewer endpoint.
 view:
-  url: http://localhost:8081/api/v1.0/view/content
+  content:
+    url: http://localhost:8081/api/v1.0/view/content
+  category:
+    url: http://localhost:8081/api/v1.0/view/category
   default-values:
     page: 1
     page-size: 20

@@ -23,8 +23,11 @@ public class ViewService {
     @Value("${view.default-values.page-size}")
     private Integer defaultPageSize;
 
-    @Value("${view.url}")
-    private String viewUrlTemplate;
+    @Value("${view.content.url}")
+    private String viewContentUrlTemplate;
+
+    @Value("${view.category.url}")
+    private String viewCategoryUrlTemplate;
 
     @Autowired
     private RestTemplateUtil restTemplateUtil;
@@ -42,7 +45,7 @@ public class ViewService {
         Integer page = (requestEntity.getPage() != null) ? requestEntity.getPage() : defaultPage;
         Integer pageSize = (requestEntity.getPageSize() != null) ? requestEntity.getPageSize() : defaultPageSize;
 
-        UriComponentsBuilder queryContentListUrl = UriComponentsBuilder.fromUriString(viewUrlTemplate);
+        UriComponentsBuilder queryContentListUrl = UriComponentsBuilder.fromUriString(viewContentUrlTemplate);
         queryContentListUrl.queryParam("categoryId", categoryId);
         queryContentListUrl.queryParam("page", page);
         queryContentListUrl.queryParam("pageSize", pageSize);
@@ -60,9 +63,16 @@ public class ViewService {
 
         Integer contentId = requestEntity.getContentId();
 
-        UriComponentsBuilder querySingleItemUrl = UriComponentsBuilder.fromUriString(viewUrlTemplate);
+        UriComponentsBuilder querySingleItemUrl = UriComponentsBuilder.fromUriString(viewContentUrlTemplate);
         querySingleItemUrl.path("/" + contentId);
 
         return restTemplateUtil.getResponse(querySingleItemUrl.build().toString(), HttpMethod.GET, null);
+    }
+
+    public CommonResponseEntity<JSONObject> getCategoryList() throws DomainException {
+
+        UriComponentsBuilder queryUrl = UriComponentsBuilder.fromUriString(viewCategoryUrlTemplate);
+
+        return restTemplateUtil.getResponse(queryUrl.build().toString(), HttpMethod.GET, null);
     }
 }

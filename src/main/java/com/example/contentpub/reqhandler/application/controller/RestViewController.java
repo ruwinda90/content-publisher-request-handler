@@ -72,4 +72,18 @@ public class RestViewController extends BaseController {
                         .build());
     }
 
+    @PreAuthorize("hasAnyAuthority({'USER_READER', 'USER_WRITER'})")
+    @GetMapping("/category")
+    public ResponseEntity<CommonResponse<JSONObject>> getCategoryList() throws DomainException {
+
+        CommonResponseEntity<JSONObject> domainResponse = viewService.getCategoryList();
+
+        return ResponseEntity.status(domainResponse.getHttpStatusCode())
+                .body(CommonResponse.<JSONObject>builder()
+                        .code(domainResponse.getCode())
+                        .description(domainResponse.getDescription())
+                        .data(domainResponse.getData())
+                        .build());
+    }
+
 }
