@@ -42,7 +42,7 @@ public class RestAuthController extends BaseController {
      */
     @PostMapping("/authenticate")
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
-    public ResponseEntity<CommonResponse<AuthResponse>> authenticate(@RequestBody @Valid AuthRequest authRequest) throws DomainException {
+    public ResponseEntity<CommonResponse<AuthResponse>> login(@RequestBody @Valid AuthRequest authRequest) throws DomainException {
 
         AuthRequestEntity requestEntity = AuthRequestEntity.builder().email(authRequest.getEmail())
                 .password(authRequest.getPassword()).build();
