@@ -64,7 +64,7 @@ public class RestAuthController extends BaseController {
 
     @PostMapping("/logout")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<CommonResponse<AuthResponse>> logout(
+    public ResponseEntity<CommonResponse<String>> logout(
             @RequestParam("userId") Integer userId,
             @RequestHeader(name = "Authorization") String authHeader) throws DomainException {
 
@@ -77,7 +77,7 @@ public class RestAuthController extends BaseController {
         return ResponseEntity
                 .status(domainResponse.getHttpStatusCode())
                 .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-                .body(CommonResponse.<AuthResponse>builder()
+                .body(CommonResponse.<String>builder()
                         .code(domainResponse.getCode())
                         .description(domainResponse.getDescription()).build());
     }
