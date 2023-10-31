@@ -4,7 +4,6 @@ import com.example.contentpub.reqhandler.application.dto.request.AuthRequest;
 import com.example.contentpub.reqhandler.application.dto.request.UserRegRequest;
 import com.example.contentpub.reqhandler.application.dto.response.AuthResponse;
 import com.example.contentpub.reqhandler.application.dto.response.CommonResponse;
-import com.example.contentpub.reqhandler.application.dto.response.RefreshResponse;
 import com.example.contentpub.reqhandler.domain.dto.AuthRequestEntity;
 import com.example.contentpub.reqhandler.domain.dto.AuthResponseEntity;
 import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
@@ -115,15 +114,20 @@ public class RestAuthController extends BaseController {
      */
     @GetMapping("/refresh")
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
-    public ResponseEntity<CommonResponse<RefreshResponse>> refreshAccessToken(
+    public ResponseEntity<CommonResponse<AuthResponse>> refreshAccessToken(
             @CookieValue(name = "refreshJwt", required = false) String refreshTokenCookie) throws DomainException {
 
         CommonResponseEntity<AuthResponseEntity> domainResponse = userAuthService.refresh(refreshTokenCookie);
 
+        AuthResponse responseData = new AuthResponse();
+        responseData.setToken(domainResponse.getData().getAccessToken());
+        responseData.setWriterId(domainResponse.getData().getWriterId());
+        responseData.getRoles().addAll(domainResponse.getData().getRoles());
+
         return ResponseEntity.status(domainResponse.getHttpStatusCode())
-                .body(CommonResponse.<RefreshResponse>builder()
+                .body(CommonResponse.<AuthResponse>builder()
                         .code(domainResponse.getCode())
                         .description(domainResponse.getDescription())
-                        .data(new RefreshResponse(domainResponse.getData().getAccessToken())).build());
+                        .data(responseData).build());
     }
 }

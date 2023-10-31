@@ -88,11 +88,6 @@ public class UserAuthServiceImpl implements UserAuthService {
     @Override
     public CommonResponseEntity<AuthResponseEntity> refresh(String refreshToken) throws DomainException {
 
-        // is the token valid
-        // - not tampered, user ID matches
-        // is token expired
-        // create access token
-
         if (refreshToken == null) {
             throw new DomainException(REFRESH_COOKIE_NOT_FOUND);
         }
@@ -103,12 +98,17 @@ public class UserAuthServiceImpl implements UserAuthService {
         User userData = authDao.findUserByEmail(userName);
         String accessToken = tokenUtilService.generateAccessToken(userData.getUsername(), userData.getId(), userData.getAuthorities()).getToken();
 
+        Long writerId = writerDao.findWriterId(userData.getEmail());
+        List<String> roles = userData.getAuthorities().stream().map(Object::toString).collect(Collectors.toList());
+
         domainResponse.setHttpStatusCode(StatusCode.SUCCESS.getHttpStatus().value());
         domainResponse.setCode(StatusCode.SUCCESS.getCode());
         domainResponse.setDescription(StatusCode.SUCCESS.getDescription());
 
         AuthResponseEntity authResponseEntity = new AuthResponseEntity();
         authResponseEntity.setAccessToken(accessToken);
+        authResponseEntity.setWriterId(writerId);
+        authResponseEntity.getRoles().addAll(roles);
         domainResponse.setData(authResponseEntity);
 
         return domainResponse;
