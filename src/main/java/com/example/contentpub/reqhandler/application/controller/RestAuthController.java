@@ -62,6 +62,26 @@ public class RestAuthController extends BaseController {
                         .data(new AuthResponse(domainResponse.getData().getAccessToken(), domainResponse.getData().getWriterId())).build());
     }
 
+    @PostMapping("/logout")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<CommonResponse<AuthResponse>> logout(
+            @RequestParam("userId") Integer userId,
+            @RequestHeader(name = "Authorization") String authHeader) throws DomainException {
+
+        CommonResponseEntity<String> domainResponse = userAuthService.logoutUser(userId, authHeader);
+
+        ResponseCookie deleteCookie = ResponseCookie // Delete cookie. // todo - test this
+                .from("refreshJwt", "").path("/api/v1.0/auth/refresh")
+                .maxAge(0L).httpOnly(true).build();
+
+        return ResponseEntity
+                .status(domainResponse.getHttpStatusCode())
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body(CommonResponse.<AuthResponse>builder()
+                        .code(domainResponse.getCode())
+                        .description(domainResponse.getDescription()).build());
+    }
+
     /**
      * The user registration endpoint. Creates a new user.
      *

@@ -15,4 +15,6 @@ public interface RefreshTokenRepo extends JpaRepository<RefreshToken, Integer> {
     @Query("SELECT rt.token FROM RefreshToken rt WHERE rt.userId=:userId")
     Optional<String> findTokenByUserId(Integer userId);
 
+    int deleteByUserId(Integer userId);
+
 }

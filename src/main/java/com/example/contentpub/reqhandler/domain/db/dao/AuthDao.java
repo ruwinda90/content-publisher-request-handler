@@ -60,4 +60,9 @@ public class AuthDao {
         return refreshTokenRepo.save(refreshToken).getId();
     }
 
+    public Integer removeRefreshToken(Integer userId) {
+
+        return refreshTokenRepo.deleteByUserId(userId);
+    }
+
 }

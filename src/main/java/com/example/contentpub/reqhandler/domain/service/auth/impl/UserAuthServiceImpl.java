@@ -125,4 +125,27 @@ public class UserAuthServiceImpl implements UserAuthService {
 
         return domainResponse;
     }
+
+    @Override
+    public CommonResponseEntity<String> logoutUser(Integer userId, String authHeader) throws DomainException {
+
+        CommonResponseEntity<String> domainResponse = new CommonResponseEntity<>();
+
+        Integer userIdInHeader = tokenUtilService.getUserIdFromAccessToken(authHeader.substring(7));
+
+        if (!userId.equals(userIdInHeader)) {
+            throw new DomainException(USER_ID_MISMATCH);
+        }
+
+        int deletedRowCount = authDao.removeRefreshToken(userId);
+        if (deletedRowCount == 0) {
+            throw new DomainException(REFRESH_TOKEN_NOT_FOUND);
+        }
+
+        domainResponse.setHttpStatusCode(StatusCode.SUCCESS.getHttpStatus().value());
+        domainResponse.setCode(StatusCode.SUCCESS.getCode());
+        domainResponse.setDescription(StatusCode.SUCCESS.getDescription());
+
+        return domainResponse;
+    }
 }

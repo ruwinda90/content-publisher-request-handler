@@ -14,4 +14,6 @@ public interface UserAuthService extends UserDetailsService {
 
     CommonResponseEntity<String> createUser(AuthRequestEntity userRegRequestEntity) throws DomainException;
 
+    CommonResponseEntity<String> logoutUser(Integer userId, String authHeader) throws DomainException;
+
 }

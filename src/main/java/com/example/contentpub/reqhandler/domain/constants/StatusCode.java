@@ -11,10 +11,11 @@ public enum StatusCode {
     EMAIL_ALREADY_IN_USE("2000", "Email already in use", HttpStatus.BAD_REQUEST),
     EMAIL_NOT_FOUND("2001", "Email not found", HttpStatus.BAD_REQUEST),
     INVALID_CREDENTIALS("2002", "Username and password does not match", HttpStatus.UNAUTHORIZED),
-    REFRESH_TOKEN_NOT_FOUND("2001", "Refresh token not found", HttpStatus.UNAUTHORIZED),
+    REFRESH_TOKEN_NOT_FOUND("2001", "Refresh token not found", HttpStatus.BAD_REQUEST),
     REFRESH_COOKIE_NOT_FOUND("2001", "Refresh cookie not found", HttpStatus.UNAUTHORIZED),
     REFRESH_TOKEN_EXPIRED("2002", "Refresh token is expired", HttpStatus.UNAUTHORIZED),
     REFRESH_TOKEN_INVALID("2003", "Refresh token is not valid", HttpStatus.UNAUTHORIZED),
+    USER_ID_MISMATCH("2004", "User ID does not match with the user ID in the header", HttpStatus.UNAUTHORIZED),
 
     BACKEND_RESP_PARSE_FAILURE("3000", "Failed to parse backend response", HttpStatus.INTERNAL_SERVER_ERROR),
     BACKEND_TIMEOUT("3001", "Failed to parse backend response", HttpStatus.INTERNAL_SERVER_ERROR),
