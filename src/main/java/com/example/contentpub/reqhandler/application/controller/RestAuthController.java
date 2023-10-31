@@ -53,13 +53,18 @@ public class RestAuthController extends BaseController {
                         domainResponse.getData().getRefreshToken()).path("/api/v1.0/auth/refresh")
                 .maxAge(cookieLifeSpan).httpOnly(true).build();
 
+        AuthResponse responseBody = new AuthResponse();
+        responseBody.setToken(domainResponse.getData().getAccessToken());
+        responseBody.setWriterId(domainResponse.getData().getWriterId());
+        responseBody.getRoles().addAll(domainResponse.getData().getRoles());
+
         return ResponseEntity
                 .status(domainResponse.getHttpStatusCode())
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(CommonResponse.<AuthResponse>builder()
                         .code(domainResponse.getCode())
                         .description(domainResponse.getDescription())
-                        .data(new AuthResponse(domainResponse.getData().getAccessToken(), domainResponse.getData().getWriterId())).build());
+                        .data(responseBody).build());
     }
 
     @PostMapping("/logout")

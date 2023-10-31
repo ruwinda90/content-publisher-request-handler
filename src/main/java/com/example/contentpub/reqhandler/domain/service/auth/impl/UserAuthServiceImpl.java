@@ -17,6 +17,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.example.contentpub.reqhandler.domain.constants.StatusCode.*;
 
 @Service
@@ -51,8 +54,10 @@ public class UserAuthServiceImpl implements UserAuthService {
         }
 
         Authentication authentication;
+        List<String> roles;
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestEntity.getEmail(), authRequestEntity.getPassword()));
+            roles = authentication.getAuthorities().stream().map(Object::toString).collect(Collectors.toList());
         } catch (BadCredentialsException ex) {
             throw new DomainException(INVALID_CREDENTIALS);
         }
@@ -74,6 +79,7 @@ public class UserAuthServiceImpl implements UserAuthService {
         authResponseEntity.setAccessToken(accessToken);
         authResponseEntity.setRefreshToken(refreshToken);
         authResponseEntity.setWriterId(writerId);
+        authResponseEntity.getRoles().addAll(roles);
         domainResponse.setData(authResponseEntity);
 
         return domainResponse;
