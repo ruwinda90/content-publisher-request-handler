@@ -4,8 +4,11 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                sh 'mvn --version'
+                sh 'maven version $(mvn --version)'
                 sh 'echo "Hello World"'
+                sh 'pwd'
+                sh 'ls -ltr'
+                sh 'mvn clean package -Dmaven.test.skip=true'
             }
         }
         stage('test') {
