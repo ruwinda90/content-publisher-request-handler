@@ -1,24 +1,32 @@
 /* Requires the Docker Pipeline plugin */
 pipeline {
     agent { docker { image 'maven:3.9.6-eclipse-temurin-17-alpine' } }
+
+    environment {
+        RED = '\033[0;31m'
+        GREEN = '\033[0;32m'
+        NC = '\033[0m'
+    }
+    
     stages {
         stage('build') {
             steps {
+                sh 'echo -e "Start build stage"'
                 sh 'mvn --version'
-                sh 'echo "Hello World"'
-                sh 'pwd'
-                sh 'ls -ltr'
                 sh 'mvn clean package -Dmaven.test.skip=true'
+                sh 'echo -e "${GREEN}Build stage complete${NC}"'
             }
         }
         stage('test') {
             steps {
-                sh 'echo "Running tests"'
+                sh 'echo "Start test stage"'
+                sh 'echo -e "${GREEN}Test stage complete${NC}"'
             }
         }
         stage('deploy') {
             steps {
-                sh 'echo "Deploying"'
+                sh 'echo "Start deploy stage"'
+                sh 'echo -e "${GREEN}Deploy stage complete${NC}"'
             }
         }
     }
