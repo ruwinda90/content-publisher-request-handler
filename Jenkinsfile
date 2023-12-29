@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                sh 'maven version $(mvn --version)'
+                sh 'mvn --version'
                 sh 'echo "Hello World"'
                 sh 'pwd'
                 sh 'ls -ltr'
