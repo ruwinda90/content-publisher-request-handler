@@ -13,7 +13,7 @@ pipeline {
             steps {
                 sh 'echo -e "Start build stage"'
                 sh 'mvn --version'
-                sh 'mvn clean package -Dmaven.test.skip=true'
+                // sh 'mvn clean package -Dmaven.test.skip=true'
                 sh 'echo -e "${GREEN}Build stage complete${NC}"'
             }
         }
