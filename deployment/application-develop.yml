@@ -18,21 +18,35 @@ spring:
     hibernate.ddl-auto: validate
     show-sql: true
 
+  redis:
+    host: localhost
+    port: 6379
+
   # Swagger configs
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
 
-jwt:
-  secret: testSecret12345_for_Testing
-  validity-period:
-    seconds: 18000 # 5-hours
+token:
+  access:
+    secret: testSecret12345_for_Testing
+    validity-period: 30 # 30s
+  refresh:
+    secret: testSecretForRefresh
+    validity-period: 1800 # 30 min
+
+cookie:
+  refresh:
+    life-span: 86400 # 1 day
 
 # Viewer endpoint.
 view:
-  url: http://host.docker.internal:8081/api/v1.0/view/content
+  content:
+    url: http://localhost:8081/api/v1.0/view/content
+  category:
+    url: http://localhost:8081/api/v1.0/view/category
   default-values:
-    page: 0
+    page: 1
     page-size: 20
 
 # Publisher endpoint.
