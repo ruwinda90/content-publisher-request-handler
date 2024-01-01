@@ -1,5 +1,5 @@
 FROM openjdk:8-jdk-alpine
-ARG configs=application
+ARG configs=CONFIG_FILE
 RUN addgroup -S spring && adduser -S spring -G spring
 RUN mkdir /app/
 RUN chown spring /app
