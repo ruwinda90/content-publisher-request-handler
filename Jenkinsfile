@@ -16,7 +16,24 @@ node {
 				echo 'Test stage complete'
 			}
 		}
-		
+
+		stage('Image build') {
+            echo 'Start image build stage'
+            def currentBranch = env.GIT_BRANCH; // todo - check how the branch name is fetched
+
+            dockerfile {
+                filename 'Dockerfile'
+                dir 'deployment'
+//              label 'my-defined-label'
+                additionalBuildArgs  "--build-arg CONFIG_FILE=${currentBranch}" // using groovy str interpolation
+//              args '-v /tmp:/tmp'
+            }
+
+            def applicationImage = docker.build("${env.JOB_NAME}-${currentBranch}:${env.BUILD_ID}")
+
+            echo 'Image build stage complete'
+        }
+
 		stage('Deploy') {
 			echo 'Start deploy stage'
 			echo 'Deploy stage complete'
