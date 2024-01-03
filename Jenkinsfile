@@ -27,7 +27,7 @@ node {
 
             dockerfile {
                 filename 'Dockerfile'
-                dir 'deployment'
+//                 dir 'deployment'
 //              label 'my-defined-label'
                 additionalBuildArgs  "--build-arg CONFIG_FILE=application-${currentBranch}.yml" // using groovy str interpolation
 //              args '-v /tmp:/tmp'
