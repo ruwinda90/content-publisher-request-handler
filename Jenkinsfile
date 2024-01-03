@@ -1,8 +1,4 @@
 node {
-
-    parameters {
-        string(name: 'APPLICATION_NAME', defaultValue: 'request-handler', description: 'Name of the application to build')
-    }
 	
 	try {
 		// deleteDir()
@@ -26,7 +22,7 @@ node {
             def currentBranch = env.BRANCH_NAME; // todo - check how the branch name is fetched
 
             def buildArgs = """--build-arg CONFIG_FILE=deployment/application-${currentBranch}.yml ."""
-            def applicationImage = docker.build("${params.APPLICATION_NAME}-${currentBranch}:${env.BUILD_ID}", buildArgs)
+            def applicationImage = docker.build("request-handler-${currentBranch}-${env.BUILD_ID}", buildArgs)
 
             echo 'Image build stage complete'
         }
