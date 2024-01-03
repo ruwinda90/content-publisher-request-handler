@@ -2,6 +2,8 @@ node {
 	
 	try {
 		// deleteDir()
+		def applicationName = 'request-handler'
+		def imageTag
 		checkout scmGit(branches: [[name: '*/fb_jenkins']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/ruwinda90/content-publisher-request-handler.git']])
 	
 		docker.image('maven:3.9.6-eclipse-temurin-8-alpine').inside('-v $HOME/.m2:/root/.m2') {
@@ -20,13 +22,17 @@ node {
 		stage('Image build') {
             echo 'Start image build stage'
             def currentBranch = env.BRANCH_NAME;
+            imageTag = "${currentBranch}-${env.BUILD_ID}";
             def buildArgs = """--build-arg CONFIG_FILE=deployment/application-${currentBranch}.yml ."""
-            def applicationImage = docker.build("request-handler:${currentBranch}-${env.BUILD_ID}", buildArgs)
+            def applicationImage = docker.build("${applicationName}:${imageTag}", buildArgs)
             echo 'Image build stage complete'
         }
 
 		stage('Deploy') {
 			echo 'Start deploy stage'
+			// todo - move to script
+			sh "if [ \$(docker ps -a | grep ${applicationName} | wc -l) -ge 1 ]; then docker stop ${applicationName} && docker rm ${applicationName}; fi"
+			sh "docker run -d -p 8081:8080 --name ${applicationName} ${applicationName}:${imageTag}" // todo - rm hardcoded port into params maybe
 			echo 'Deploy stage complete'
 		}
 		
