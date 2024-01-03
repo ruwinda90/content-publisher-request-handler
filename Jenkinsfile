@@ -44,7 +44,7 @@ node {
 			echo 'This will run only if the state of the Pipeline has changed'
 		}
 		
-		echo 'This will always run'
+		echo "Pipeline complete! Status - ${currentResult}"
 	}
 	
 }
