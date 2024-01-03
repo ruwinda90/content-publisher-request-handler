@@ -25,15 +25,8 @@ node {
             echo 'Start image build stage'
             def currentBranch = env.BRANCH_NAME; // todo - check how the branch name is fetched
 
-            dockerfile {
-                filename 'Dockerfile'
-//                 dir 'deployment'
-//              label 'my-defined-label'
-                additionalBuildArgs  "--build-arg CONFIG_FILE=application-${currentBranch}.yml" // using groovy str interpolation
-//              args '-v /tmp:/tmp'
-            }
-
-            def applicationImage = docker.build("${params.APPLICATION_NAME}-${currentBranch}:${env.BUILD_ID}")
+            def buildArgs = """--build-arg CONFIG_FILE=deployment/application-${currentBranch}.yml ."""
+            def applicationImage = docker.build("${params.APPLICATION_NAME}-${currentBranch}:${env.BUILD_ID}", buildArgs)
 
             echo 'Image build stage complete'
         }
