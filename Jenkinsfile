@@ -19,7 +19,7 @@ node {
 
 		stage('Image build') {
             echo 'Start image build stage'
-            def currentBranch = env.GIT_BRANCH; // todo - check how the branch name is fetched
+            def currentBranch = env.BRANCH_NAME; // todo - check how the branch name is fetched
 
             dockerfile {
                 filename 'Dockerfile'
