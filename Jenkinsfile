@@ -1,4 +1,8 @@
-node {	
+node {
+
+    parameters {
+        string(name: 'APPLICATION_NAME', defaultValue: 'request-handler', description: 'Name of the application to build')
+    }
 	
 	try {
 		// deleteDir()
@@ -29,7 +33,7 @@ node {
 //              args '-v /tmp:/tmp'
             }
 
-            def applicationImage = docker.build("${env.JOB_NAME}-${currentBranch}:${env.BUILD_ID}")
+            def applicationImage = docker.build("${params.APPLICATION_NAME}-${currentBranch}:${env.BUILD_ID}")
 
             echo 'Image build stage complete'
         }
