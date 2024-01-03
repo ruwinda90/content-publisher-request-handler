@@ -19,7 +19,7 @@ node {
 
 		stage('Image build') {
             echo 'Start image build stage'
-            def currentBranch = env.BRANCH_NAME; // todo - check how the branch name is fetched
+            def currentBranch = env.BRANCH_NAME;
 
             def buildArgs = """--build-arg CONFIG_FILE=deployment/application-${currentBranch}.yml ."""
             def applicationImage = docker.build("request-handler-${currentBranch}-${env.BUILD_ID}", buildArgs)
