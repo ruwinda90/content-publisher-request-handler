@@ -43,9 +43,7 @@ node {
 		currentBuild.result = 'SUCCESS'
 	} catch (e) {
 		echo 'This will run only if failed'
-		throw e
 	} finally {
-// 	    def currentResult = currentBuild.result ?: 'FAILURE'
 	    if (currentBuild.result == null) {
             currentBuild.result = 'FAILURE'
         }
