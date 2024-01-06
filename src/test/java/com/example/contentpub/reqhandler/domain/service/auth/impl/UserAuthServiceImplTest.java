@@ -39,6 +39,7 @@ class UserAuthServiceImplTest {
     void loadUserByUsername_success() {
 
         doReturn(Mockito.mock(User.class)).when(authDao).findUserByEmail("test@test.com");
+        int i = 1/0;
         assertNotNull(userAuthService.loadUserByUsername("test@test.com"));
     }
 
