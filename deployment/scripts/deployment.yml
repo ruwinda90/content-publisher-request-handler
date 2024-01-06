@@ -46,10 +46,5 @@ spec:
               port: ${APPLICATION_PORT}
             failureThreshold: 3
             periodSeconds: 15
-      terminationMessagePath: /dev/termination-log
-      terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
       restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext: {}
-      terminationGracePeriodSeconds: 30
