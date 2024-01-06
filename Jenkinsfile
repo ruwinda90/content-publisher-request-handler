@@ -4,7 +4,7 @@ node {
 		// deleteDir()
 		def applicationName = 'request-handler'
 		def imageTag
-		checkout scmGit(branches: [[name: '*/fb_jenkins']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/ruwinda90/content-publisher-request-handler.git']]) // todo
+		checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/ruwinda90/content-publisher-request-handler.git']]) // todo
 	
 		docker.image('maven:3.9.6-eclipse-temurin-8-alpine').inside('-v $HOME/.m2:/root/.m2') {
 			stage('Build') {
