@@ -35,7 +35,7 @@ node {
 
 		stage('Deploy') {
 			echo 'Start deploy stage'
-			sh "./deployment/scripts/deploy.sh ${applicationName} ${applicationName} ${imageTag} 8080" // todo enhance
+			sh "./deployment/scripts/deploy-k8.sh ${applicationName} ${applicationName} ${imageTag} 8080" // todo enhance
 			echo 'Deploy stage complete'
 		}
 		currentBuild.result = 'SUCCESS'
