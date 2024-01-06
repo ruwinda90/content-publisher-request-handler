@@ -1,8 +1,5 @@
 package com.example.contentpub.reqhandler.domain.db.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +15,6 @@ import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Setter
 @Getter
 @Entity
@@ -35,6 +31,7 @@ public class User implements UserDetails {
     private String role;
 
     @CreationTimestamp
+    @Column(updatable = false)
     private Date createdAt;
 
     @Override

@@ -1,16 +1,16 @@
 package com.example.contentpub.reqhandler.application.controller;
 
+import com.example.contentpub.reqhandler.application.dto.request.ContentCreateRequest;
+import com.example.contentpub.reqhandler.application.dto.request.ContentEditRequest;
+import com.example.contentpub.reqhandler.application.dto.request.CreatePublisherRequest;
 import com.example.contentpub.reqhandler.application.dto.response.CommonResponse;
 import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
 import com.example.contentpub.reqhandler.domain.dto.PublishRequestEntity;
 import com.example.contentpub.reqhandler.domain.dto.RegPublisherRequestEntity;
-import com.example.contentpub.reqhandler.application.dto.request.ContentCreateRequest;
-import com.example.contentpub.reqhandler.application.dto.request.ContentEditRequest;
-import com.example.contentpub.reqhandler.application.dto.request.CreatePublisherRequest;
-import com.example.contentpub.reqhandler.domain.service.auth.JwtTokenUtil;
+import com.example.contentpub.reqhandler.domain.exception.DomainException;
+import com.example.contentpub.reqhandler.domain.service.auth.impl.TokenUtilService;
 import com.example.contentpub.reqhandler.domain.service.publish.PublishService;
 import net.minidev.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,13 +24,17 @@ import static com.example.contentpub.reqhandler.domain.constants.AuthConstants.A
  */
 @RestController
 @RequestMapping("/publisher")
+@CrossOrigin(origins = "http://localhost:3000")
 public class RestPublishController extends BaseController {
 
-    @Autowired
-    private PublishService publishService;
+    private final PublishService publishService;
+    private final TokenUtilService tokenUtilService;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    public RestPublishController(PublishService publishService, TokenUtilService tokenUtilService) {
+        this.publishService = publishService;
+        this.tokenUtilService = tokenUtilService;
+    }
+
 
     /**
      * Register a READER user as a WRITER user. This endpoint is only allowed for READER users.
@@ -41,9 +45,9 @@ public class RestPublishController extends BaseController {
     @PreAuthorize("hasAnyAuthority({'USER_READER'})")
     @PostMapping("/register")
     public ResponseEntity<CommonResponse<JSONObject>> createPublisher(@RequestBody @Valid CreatePublisherRequest createPublisherRequest,
-                                                                      @RequestHeader(name = AUTHORIZATION) String authHeader) {
+                                                                      @RequestHeader(name = AUTHORIZATION) String authHeader) throws DomainException {
 
-        Integer userId = jwtTokenUtil.getUserIdFromHeaders(authHeader);
+        Integer userId = tokenUtilService.getUserIdFromAccessToken(authHeader.substring(7));
 
         RegPublisherRequestEntity requestEntity = RegPublisherRequestEntity.builder()
                 .userId(userId)
@@ -52,11 +56,13 @@ public class RestPublishController extends BaseController {
                 .countryId(createPublisherRequest.getCountryId())
                 .build();
 
-        CommonResponseEntity domainResponse = publishService.createPublisher(requestEntity);
+        CommonResponseEntity<JSONObject> domainResponse = publishService.createPublisher(requestEntity);
 
-        return ResponseEntity.status(domainResponse.getStatusCode())
-                .body(CommonResponse.<JSONObject>builder().description(domainResponse.getDescription())
-                        .response(domainResponse.getResponseBody())
+        return ResponseEntity.status(domainResponse.getHttpStatusCode())
+                .body(CommonResponse.<JSONObject>builder()
+                        .code(domainResponse.getCode())
+                        .description(domainResponse.getDescription())
+                        .data(domainResponse.getData())
                         .build());
 
     }
@@ -70,9 +76,9 @@ public class RestPublishController extends BaseController {
     @PreAuthorize("hasAnyAuthority({'USER_WRITER'})")
     @PostMapping("/content")
     public ResponseEntity<CommonResponse<JSONObject>> publishContent(@RequestBody @Valid ContentCreateRequest contentCreateRequest,
-                                                     @RequestHeader(name = AUTHORIZATION) String authHeader) {
+                                                     @RequestHeader(name = AUTHORIZATION) String authHeader) throws DomainException {
 
-        Integer userId = jwtTokenUtil.getUserIdFromHeaders(authHeader);
+        Integer userId = tokenUtilService.getUserIdFromAccessToken(authHeader.substring(7));
 
         PublishRequestEntity requestEntity = PublishRequestEntity.builder()
                 .title(contentCreateRequest.getTitle())
@@ -82,11 +88,13 @@ public class RestPublishController extends BaseController {
                 .categoryId(contentCreateRequest.getCategoryId())
                 .build();
 
-        CommonResponseEntity domainResponse = publishService.publishContent(requestEntity);
+        CommonResponseEntity<JSONObject> domainResponse = publishService.publishContent(requestEntity);
 
-        return ResponseEntity.status(domainResponse.getStatusCode())
-                .body(CommonResponse.<JSONObject>builder().description(domainResponse.getDescription())
-                        .response(domainResponse.getResponseBody())
+        return ResponseEntity.status(domainResponse.getHttpStatusCode())
+                .body(CommonResponse.<JSONObject>builder()
+                        .code(domainResponse.getCode())
+                        .description(domainResponse.getDescription())
+                        .data(domainResponse.getData())
                         .build());
 
     }
@@ -102,9 +110,9 @@ public class RestPublishController extends BaseController {
     @PutMapping("/content/{id}")
     public ResponseEntity<CommonResponse<JSONObject>> updateContent(@PathVariable("id") Integer contentId,
                                                     @RequestBody @Valid ContentEditRequest contentEditRequest,
-                                                    @RequestHeader(name = AUTHORIZATION) String authHeader) {
+                                                    @RequestHeader(name = AUTHORIZATION) String authHeader) throws DomainException {
 
-        Integer userId = jwtTokenUtil.getUserIdFromHeaders(authHeader); // Fetch user ID.
+        Integer userId = tokenUtilService.getUserIdFromAccessToken(authHeader.substring(7)); // Fetch user ID.
 
         PublishRequestEntity requestEntity = PublishRequestEntity.builder()
                 .contentId(contentId)
@@ -114,11 +122,13 @@ public class RestPublishController extends BaseController {
                 .userId(userId)
                 .build();
 
-        CommonResponseEntity domainResponse = publishService.updateContent(requestEntity);
+        CommonResponseEntity<JSONObject> domainResponse = publishService.updateContent(requestEntity);
 
-        return ResponseEntity.status(domainResponse.getStatusCode())
-                .body(CommonResponse.<JSONObject>builder().description(domainResponse.getDescription())
-                        .response(domainResponse.getResponseBody())
+        return ResponseEntity.status(domainResponse.getHttpStatusCode())
+                .body(CommonResponse.<JSONObject>builder()
+                        .code(domainResponse.getCode())
+                        .description(domainResponse.getDescription())
+                        .data(domainResponse.getData())
                         .build());
     }
 
@@ -131,20 +141,22 @@ public class RestPublishController extends BaseController {
     @PreAuthorize("hasAnyAuthority({'USER_WRITER'})")
     @DeleteMapping("/content/{id}")
     public ResponseEntity<CommonResponse<JSONObject>> deleteContent(@PathVariable("id") Integer contentId,
-                                                    @RequestHeader(name = AUTHORIZATION) String authHeader) {
+                                                    @RequestHeader(name = AUTHORIZATION) String authHeader) throws DomainException {
 
-        Integer userId = jwtTokenUtil.getUserIdFromHeaders(authHeader);
+        Integer userId = tokenUtilService.getUserIdFromAccessToken(authHeader.substring(7));
 
         PublishRequestEntity requestEntity = PublishRequestEntity.builder()
                 .contentId(contentId)
                 .userId(userId)
                 .build();
 
-        CommonResponseEntity domainResponse = publishService.deleteContent(requestEntity);
+        CommonResponseEntity<JSONObject> domainResponse = publishService.deleteContent(requestEntity);
 
-        return ResponseEntity.status(domainResponse.getStatusCode())
-                .body(CommonResponse.<JSONObject>builder().description(domainResponse.getDescription())
-                        .response(domainResponse.getResponseBody())
+        return ResponseEntity.status(domainResponse.getHttpStatusCode())
+                .body(CommonResponse.<JSONObject>builder()
+                        .code(domainResponse.getCode())
+                        .description(domainResponse.getDescription())
+                        .data(domainResponse.getData())
                         .build());
     }
 

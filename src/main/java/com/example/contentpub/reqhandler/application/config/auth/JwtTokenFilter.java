@@ -1,6 +1,6 @@
 package com.example.contentpub.reqhandler.application.config.auth;
 
-import com.example.contentpub.reqhandler.domain.service.auth.TokenProvider;
+import com.example.contentpub.reqhandler.domain.service.auth.impl.TokenUtilService;
 import com.example.contentpub.reqhandler.domain.service.auth.UserAuthService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -27,7 +27,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private UserAuthService userAuthService;
 
     @Autowired
-    private TokenProvider tokenProvider;
+    private TokenUtilService tokenUtilService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -41,7 +41,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         if (requestTokenHeader != null && requestTokenHeader.startsWith(BEARER)) {
             jwtToken = requestTokenHeader.substring(7);
             try {
-                username = tokenProvider.getUsernameFromToken(jwtToken);
+                username = tokenUtilService.getUsernameFromAccessToken(jwtToken);
             } catch (IllegalArgumentException e) {
                 logger.error("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
@@ -57,7 +57,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = userAuthService.loadUserByUsername(username);
 
-            if (tokenProvider.validateToken(jwtToken, userDetails)) {
+            if (tokenUtilService.validateAccessToken(jwtToken, userDetails)) {
 
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
@@ -75,6 +75,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         /* JWT token headers are not required for these requests. */
         return request.getRequestURI().contains("/auth")
+                || request.getRequestURI().contains("/refresh")
                 || request.getRequestURI().contains("/swagger-ui");
     }
 

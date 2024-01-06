@@ -2,7 +2,9 @@ package com.example.contentpub.reqhandler.domain.service.view;
 
 import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
 import com.example.contentpub.reqhandler.domain.dto.ViewRequestEntity;
+import com.example.contentpub.reqhandler.domain.exception.DomainException;
 import com.example.contentpub.reqhandler.external.util.rest.RestTemplateUtil;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -21,8 +23,11 @@ public class ViewService {
     @Value("${view.default-values.page-size}")
     private Integer defaultPageSize;
 
-    @Value("${view.url}")
-    private String viewUrlTemplate;
+    @Value("${view.content.url}")
+    private String viewContentUrlTemplate;
+
+    @Value("${view.category.url}")
+    private String viewCategoryUrlTemplate;
 
     @Autowired
     private RestTemplateUtil restTemplateUtil;
@@ -32,7 +37,7 @@ public class ViewService {
      * @param requestEntity the domain request entity.
      * @return the domain response.
      */
-    public CommonResponseEntity getContentList(ViewRequestEntity requestEntity) {
+    public CommonResponseEntity<JSONObject> getContentList(ViewRequestEntity requestEntity) throws DomainException {
 
         Integer categoryId = requestEntity.getCategoryId();
 
@@ -40,8 +45,11 @@ public class ViewService {
         Integer page = (requestEntity.getPage() != null) ? requestEntity.getPage() : defaultPage;
         Integer pageSize = (requestEntity.getPageSize() != null) ? requestEntity.getPageSize() : defaultPageSize;
 
-        UriComponentsBuilder queryContentListUrl = UriComponentsBuilder.fromUriString(viewUrlTemplate);
-        queryContentListUrl.queryParam("categoryId", categoryId);
+        UriComponentsBuilder queryContentListUrl = UriComponentsBuilder.fromUriString(viewContentUrlTemplate);
+
+        if (categoryId != null) {
+            queryContentListUrl.queryParam("categoryId", categoryId);
+        }
         queryContentListUrl.queryParam("page", page);
         queryContentListUrl.queryParam("pageSize", pageSize);
 
@@ -54,13 +62,20 @@ public class ViewService {
      * @param requestEntity the domain request entity.
      * @return the domain response.
      */
-    public CommonResponseEntity getSingleContentItem(ViewRequestEntity requestEntity) {
+    public CommonResponseEntity<JSONObject> getSingleContentItem(ViewRequestEntity requestEntity) throws DomainException {
 
         Integer contentId = requestEntity.getContentId();
 
-        UriComponentsBuilder querySingleItemUrl = UriComponentsBuilder.fromUriString(viewUrlTemplate);
+        UriComponentsBuilder querySingleItemUrl = UriComponentsBuilder.fromUriString(viewContentUrlTemplate);
         querySingleItemUrl.path("/" + contentId);
 
         return restTemplateUtil.getResponse(querySingleItemUrl.build().toString(), HttpMethod.GET, null);
+    }
+
+    public CommonResponseEntity<JSONObject> getCategoryList() throws DomainException {
+
+        UriComponentsBuilder queryUrl = UriComponentsBuilder.fromUriString(viewCategoryUrlTemplate);
+
+        return restTemplateUtil.getResponse(queryUrl.build().toString(), HttpMethod.GET, null);
     }
 }

@@ -3,6 +3,7 @@ package com.example.contentpub.reqhandler.application.controller;
 import com.example.contentpub.reqhandler.application.dto.response.CommonResponse;
 import com.example.contentpub.reqhandler.domain.dto.CommonResponseEntity;
 import com.example.contentpub.reqhandler.domain.dto.ViewRequestEntity;
+import com.example.contentpub.reqhandler.domain.exception.DomainException;
 import com.example.contentpub.reqhandler.domain.service.view.ViewService;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,9 @@ public class RestViewController extends BaseController {
      */
     @PreAuthorize("hasAnyAuthority({'USER_READER', 'USER_WRITER'})")
     @GetMapping("/content")
-    public ResponseEntity<CommonResponse<JSONObject>> getContentList(@RequestParam(name = "categoryId") Integer categoryId,
+    public ResponseEntity<CommonResponse<JSONObject>> getContentList(@RequestParam(name = "categoryId", required = false) Integer categoryId,
                                                                      @RequestParam(name = "page", required = false) Integer page,
-                                                                     @RequestParam(name = "pageSize", required = false) Integer pageSize) {
+                                                                     @RequestParam(name = "pageSize", required = false) Integer pageSize) throws DomainException {
 
         ViewRequestEntity requestEntity = ViewRequestEntity.builder()
                 .categoryId(categoryId)
@@ -40,11 +41,13 @@ public class RestViewController extends BaseController {
                 .pageSize(pageSize)
                 .build();
 
-        CommonResponseEntity domainResponse = viewService.getContentList(requestEntity);
+        CommonResponseEntity<JSONObject> domainResponse = viewService.getContentList(requestEntity);
 
-        return ResponseEntity.status(domainResponse.getStatusCode())
-                .body(CommonResponse.<JSONObject>builder().description(domainResponse.getDescription())
-                                                          .response(domainResponse.getResponseBody())
+        return ResponseEntity.status(domainResponse.getHttpStatusCode())
+                .body(CommonResponse.<JSONObject>builder()
+                        .code(domainResponse.getCode())
+                        .description(domainResponse.getDescription())
+                                                          .data(domainResponse.getData())
                                                         .build());
     }
 
@@ -55,15 +58,31 @@ public class RestViewController extends BaseController {
      */
     @PreAuthorize("hasAnyAuthority({'USER_READER', 'USER_WRITER'})")
     @GetMapping("/content/{id}")
-    public ResponseEntity<CommonResponse<JSONObject>> getSingleContentItem(@PathVariable(name = "id") Integer contentId) {
+    public ResponseEntity<CommonResponse<JSONObject>> getSingleContentItem(@PathVariable(name = "id") Integer contentId) throws DomainException  {
 
         ViewRequestEntity requestEntity = ViewRequestEntity.builder().contentId(contentId).build();
 
-        CommonResponseEntity domainResponse = viewService.getSingleContentItem(requestEntity);
+        CommonResponseEntity<JSONObject> domainResponse = viewService.getSingleContentItem(requestEntity);
 
-        return ResponseEntity.status(domainResponse.getStatusCode())
-                .body(CommonResponse.<JSONObject>builder().description(domainResponse.getDescription())
-                        .response(domainResponse.getResponseBody())
+        return ResponseEntity.status(domainResponse.getHttpStatusCode())
+                .body(CommonResponse.<JSONObject>builder()
+                        .code(domainResponse.getCode())
+                        .description(domainResponse.getDescription())
+                        .data(domainResponse.getData())
+                        .build());
+    }
+
+    @PreAuthorize("hasAnyAuthority({'USER_READER', 'USER_WRITER'})")
+    @GetMapping("/category")
+    public ResponseEntity<CommonResponse<JSONObject>> getCategoryList() throws DomainException {
+
+        CommonResponseEntity<JSONObject> domainResponse = viewService.getCategoryList();
+
+        return ResponseEntity.status(domainResponse.getHttpStatusCode())
+                .body(CommonResponse.<JSONObject>builder()
+                        .code(domainResponse.getCode())
+                        .description(domainResponse.getDescription())
+                        .data(domainResponse.getData())
                         .build());
     }
 

@@ -1,10 +1,13 @@
 package com.example.contentpub.reqhandler.application.controller;
 
 import com.example.contentpub.reqhandler.application.dto.response.CommonResponse;
+import com.example.contentpub.reqhandler.domain.constants.StatusCode;
+import com.example.contentpub.reqhandler.domain.exception.DomainException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +23,7 @@ public class BaseController {
     /**
      * The MethodArgumentNotValidException handler. MethodArgumentNotValidException gets thrown when the request params
      * are not valid.
+     *
      * @param exception the exception.
      * @return the error response.
      */
@@ -30,11 +34,12 @@ public class BaseController {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponse( message, "Request parameters not valid"));
+                .body(new CommonResponse(null, message, null));
     }
 
     /**
      * The HttpMessageNotReadableException handler.
+     *
      * @param exception the exception.
      * @return the error response.
      */
@@ -43,12 +48,13 @@ public class BaseController {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponse( "Invalid request", "handleHttpMessageNotReadableExp"));
+                .body(new CommonResponse(null, "Could not read request body properly", null));
     }
 
     /**
      * The MissingServletRequestParameterException handler. MissingServletRequestParameterException gets thrown when
-     * there missing request parameters.
+     * there are missing request parameters.
+     *
      * @param exception the exception.
      * @return the error response.
      */
@@ -59,7 +65,28 @@ public class BaseController {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponse( message, "Request parameters not valid"));
+                .body(new CommonResponse(null, message, null));
+    }
+
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<CommonResponse<String>> handleDomainExp(DomainException exception) {
+
+        return ResponseEntity
+                .status(exception.getHttpStatus())
+                .body(new CommonResponse(exception.getCode(), exception.getMessage(), null));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<CommonResponse<String>> handleCommonExp(AccessDeniedException exception) {
+
+        throw exception;
+    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<CommonResponse<String>> handleCommonExp(Exception exception) {
+
+        return ResponseEntity
+                .status(StatusCode.INTERNAL_ERROR.getHttpStatus())
+                .body(new CommonResponse(StatusCode.INTERNAL_ERROR.getCode(), exception.getMessage(), null));
     }
 
 }
