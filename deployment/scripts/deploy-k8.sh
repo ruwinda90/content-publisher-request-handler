@@ -28,14 +28,20 @@ sed -e "s/\${APPLICATION_NAME}/${application_name}/g" -e "s/\${DEPLOY_NAME}/${de
  -e "s/\${IMAGE}/${image_name}/g" -e "s/\${IMAGE_TAG}/${image_tag}/g" -e "s/\${APPLICATION_PORT}/${port}/g" ../deployment/scripts/deployment.yml > deployment-processed.yml
 
 if [ $(microk8s kubectl get deploy -n ${namespace_name} --no-headers | grep "${deploy_name}" | wc -l) -eq 1 ]; then
-  echo "Deployment ${namespace_name} is already created"
+  echo "Deployment ${deploy_name} is already created"
 fi
 microk8s kubectl apply -n "${namespace_name}" -f deployment-processed.yml || exit 1;
 echo "Deployment ${deploy_name} is created"
 cd ../
 
 # Create service
-microk8s kubectl expose deploy -n "${namespace_name}" "${deploy_name}" --name "${service_name}" --type NodePort --port "${port}" --target-port "${port}" || exit 1;
+if [ $(microk8s kubectl get svc -n ${namespace_name} --no-headers | grep "${service_name}" | wc -l) -eq 1 ]; then
+  echo "Service ${service_name} is already created"
+else
+  microk8s kubectl expose deploy -n "${namespace_name}" "${deploy_name}" --name "${service_name}" --type NodePort --port "${port}" --target-port "${port}" || exit 1;
+  node_port=$(kubectl get svc -n "${namespace_name}" "${service_name}" -o jsonPath=-o jsonpath='{.spec.ports[0].nodePort}')
+  echo "Service ${service_name} is created. Application is exposed on port ${node_port}"
+fi
 
 # Clean up
 rm -rf "${TEMP_SCRIPT_DIR}"
