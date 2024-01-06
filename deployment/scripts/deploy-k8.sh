@@ -27,7 +27,7 @@ mkdir "${TEMP_SCRIPT_DIR}" && cd "${TEMP_SCRIPT_DIR}"
 sed -e "s/\${APPLICATION_NAME}/${application_name}/g" -e "s/\${DEPLOY_NAME}/${deploy_name}/g" -e "s/\${N_REPLICAS}/${replicas}/g" \
  -e "s/\${IMAGE}/${image_name}/g" -e "s/\${IMAGE_TAG}/${image_tag}/g" -e "s/\${APPLICATION_PORT}/${port}/g" ../deployment/scripts/deployment.yml > deployment-processed.yml
 
-if [ $(microk8s kubectl get deploy -n ${namespace} --no-headers | grep "${deploy_name}" | wc -l) -eq 1 ]; then
+if [ $(microk8s kubectl get deploy -n ${namespace_name} --no-headers | grep "${deploy_name}" | wc -l) -eq 1 ]; then
   echo "Deployment ${namespace_name} is already created"
 fi
 microk8s kubectl apply -n "${namespace_name}" -f deployment-processed.yml || exit 1;
