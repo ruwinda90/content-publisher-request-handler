@@ -13,9 +13,14 @@ node {
 				echo 'Build stage complete'
 			}
 			stage('Test') {
-				echo 'Start test stage'
-				sh 'mvn test-compile surefire:test'
-				echo 'Test stage complete'
+				try {
+				    echo 'Start test stage'
+				    sh 'mvn test-compile surefire:test'
+				    echo 'Test stage complete'
+				} catch (ex) {
+				    currentBuild.result = 'UNSTABLE'
+				    throw ex
+				}
 			}
 		}
 
@@ -35,22 +40,25 @@ node {
 			sh "docker run -d -p 8081:8080 --name ${applicationName} ${applicationName}:${imageTag}" // todo - rm hardcoded port into params maybe
 			echo 'Deploy stage complete'
 		}
-		
+		currentBuild.result = 'SUCCESS'
 	} catch (e) {
 		echo 'This will run only if failed'
 		throw e
 	} finally {
-		def currentResult = currentBuild.result ?: 'SUCCESS'
-		if (currentResult == 'UNSTABLE') {
+// 	    def currentResult = currentBuild.result ?: 'FAILURE'
+	    if (currentBuild.result == null) {
+            currentBuild.result = 'FAILURE'
+        }
+		if (currentBuild.result == 'UNSTABLE') {
 			echo 'This will run only if the run was marked as unstable'
 		}
 		
 		def previousResult = currentBuild.previousBuild?.result
-		if (previousResult != null && previousResult != currentResult) {
+		if (previousResult != null && previousResult != currentBuild.result) {
 			echo 'This will run only if the state of the Pipeline has changed'
 		}
 		
-		echo "Pipeline complete! Status - ${currentResult}"
+		echo "Pipeline complete! Status - ${currentBuild.result}"
 	}
 	
 }
