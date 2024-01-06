@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - image: ${IMAGE}:${IMAGE_TAG}
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           name: runner
           ports:
             - containerPort: ${APPLICATION_PORT}
