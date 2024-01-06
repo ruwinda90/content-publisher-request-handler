@@ -28,24 +28,24 @@ spec:
           ports:
             - containerPort: ${APPLICATION_PORT}
           resources: {}
-  startupProbe:
-    httpGet:
-    path: /healthz
-    port: ${APPLICATION_PORT}
-      failureThreshold: 30
-      periodSeconds: 15
-  readinessProbe:
-    httpGet:
-    path: /healthz
-    port: ${APPLICATION_PORT}
-      failureThreshold: 1
-      periodSeconds: 15
-  livenessProbe:
-    httpGet:
-    path: /healthz
-    port: ${APPLICATION_PORT}
-      failureThreshold: 3
-      periodSeconds: 15
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: ${APPLICATION_PORT}
+            failureThreshold: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: ${APPLICATION_PORT}
+            failureThreshold: 1
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: ${APPLICATION_PORT}
+            failureThreshold: 3
+            periodSeconds: 15
       terminationMessagePath: /dev/termination-log
       terminationMessagePolicy: File
     dnsPolicy: ClusterFirst
