@@ -48,8 +48,8 @@ spec:
             periodSeconds: 15
       terminationMessagePath: /dev/termination-log
       terminationMessagePolicy: File
-    dnsPolicy: ClusterFirst
-    restartPolicy: Always
-    schedulerName: default-scheduler
-    securityContext: {}
-    terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
