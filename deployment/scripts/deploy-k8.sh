@@ -18,6 +18,9 @@ else
 fi
 
 # Create deployment
+if [ -d "$dirname" ]; then
+  rm -rf temp-scripts
+fi
 mkdir temp-scripts && cd temp-scripts
 sed -e "s/\${APPLICATION_NAME}/${application_name}/g" -e "s/\${DEPLOY_NAME}/${deploy_name}/g" -e "s/\${N_REPLICAS}/${replicas}/g" \
  -e "s/\${IMAGE}/${image_name}/g" -e "s/\${IMAGE_TAG}/${image_tag}/g" -e "s/\${APPLICATION_PORT}/${port}/g" ./custom-scripts/deployment.yml > deployment-processed.yml
