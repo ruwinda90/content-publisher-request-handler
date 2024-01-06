@@ -10,7 +10,7 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app: ${DEPLOY_NAME}
+      app: ${APPLICATION_NAME}
   strategy:
     rollingUpdate:
       maxSurge: 25%
