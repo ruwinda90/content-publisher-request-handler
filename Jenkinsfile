@@ -35,9 +35,7 @@ node {
 
 		stage('Deploy') {
 			echo 'Start deploy stage'
-			// todo - move to script
-			sh "if [ \$(docker ps -a | grep ${applicationName} | wc -l) -ge 1 ]; then docker stop ${applicationName} && docker rm ${applicationName}; fi"
-			sh "docker run -d -p 8081:8080 --name ${applicationName} ${applicationName}:${imageTag}" // todo - rm hardcoded port into params maybe
+			sh "./deployment/scripts/deploy.sh ${applicationName} ${applicationName} ${imageTag} 8080" // todo enhance
 			echo 'Deploy stage complete'
 		}
 		currentBuild.result = 'SUCCESS'
