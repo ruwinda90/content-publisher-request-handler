@@ -3,8 +3,10 @@ node {
 	try {
 		// deleteDir()
 		def applicationName = 'request-handler'
+		def dockerRegistryUrl = 'localhost:5000'
+		def imageName
 		def imageTag
-		checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/ruwinda90/content-publisher-request-handler.git']]) // todo
+		checkout scmGit(branches: [[name: '*/fb_jenkins_k8']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/ruwinda90/content-publisher-request-handler.git']]) // todo
 	
 		docker.image('maven:3.9.6-eclipse-temurin-8-alpine').inside('-v $HOME/.m2:/root/.m2') {
 			stage('Build') {
@@ -25,19 +27,20 @@ node {
 		}
 
 		stage('Image build') {
-	            echo 'Start image build stage'
-	            def currentBranch = env.BRANCH_NAME;
-	            imageTag = "${currentBranch}-${env.BUILD_ID}";
-	            def buildArgs = """--build-arg CONFIG_FILE=deployment/application-${currentBranch}.yml ."""
-	            def applicationImage = docker.build("${applicationName}:${imageTag}", buildArgs)
-	            echo 'Image build stage complete'
-	        }
+            echo 'Start image build stage'
+            def currentBranch = env.BRANCH_NAME;
+			      imageName = "${dockerRegistryUrl}/${applicationName}"
+            imageTag = "${currentBranch}-${env.BUILD_ID}";
+            def buildArgs = """--build-arg CONFIG_FILE=deployment/application-${currentBranch}.yml ."""
+            def applicationImage = docker.build("${imageName}:${imageTag}", buildArgs)
+			      applicationImage.push()
+            echo 'Image build stage complete'
+    }
 
 		stage('Deploy') {
 			echo 'Start deploy stage'
-			// todo - move to script
-			sh "if [ \$(docker ps -a | grep ${applicationName} | wc -l) -ge 1 ]; then docker stop ${applicationName} && docker rm ${applicationName}; fi"
-			sh "docker run -d -p 8081:8080 --name ${applicationName} ${applicationName}:${imageTag}" // todo - rm hardcoded port into params maybe
+			sh "chmod u+x ./deployment/scripts/deploy-k8.sh && \
+			 ./deployment/scripts/deploy-k8.sh ${applicationName} ${imageName} ${imageTag} 8080" // todo enhance
 			echo 'Deploy stage complete'
 		}
 		currentBuild.result = 'SUCCESS'

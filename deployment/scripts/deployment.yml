@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ${APPLICATION_NAME}
+  name: ${DEPLOY_NAME}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: ${N_REPLICAS}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: ${APPLICATION_NAME}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      containers:
+        - image: ${IMAGE}:${IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          name: runner
+          ports:
+            - containerPort: ${APPLICATION_PORT}
+          resources: {}
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: ${APPLICATION_PORT}
+            failureThreshold: 5
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: ${APPLICATION_PORT}
+            failureThreshold: 1
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: ${APPLICATION_PORT}
+            failureThreshold: 3
+            periodSeconds: 15
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
