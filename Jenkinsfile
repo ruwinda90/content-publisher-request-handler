@@ -25,13 +25,13 @@ node {
 		}
 
 		stage('Image build') {
-            echo 'Start image build stage'
-            def currentBranch = env.BRANCH_NAME;
-            imageTag = "${currentBranch}-${env.BUILD_ID}";
-            def buildArgs = """--build-arg CONFIG_FILE=deployment/application-${currentBranch}.yml ."""
-            def applicationImage = docker.build("${applicationName}:${imageTag}", buildArgs)
-            echo 'Image build stage complete'
-        }
+	            echo 'Start image build stage'
+	            def currentBranch = env.BRANCH_NAME;
+	            imageTag = "${currentBranch}-${env.BUILD_ID}";
+	            def buildArgs = """--build-arg CONFIG_FILE=deployment/application-${currentBranch}.yml ."""
+	            def applicationImage = docker.build("${applicationName}:${imageTag}", buildArgs)
+	            echo 'Image build stage complete'
+	        }
 
 		stage('Deploy') {
 			echo 'Start deploy stage'
@@ -45,8 +45,8 @@ node {
 		echo 'This will run only if failed'
 	} finally {
 	    if (currentBuild.result == null) {
-            currentBuild.result = 'FAILURE'
-        }
+	    currentBuild.result = 'FAILURE'
+	}
 		if (currentBuild.result == 'UNSTABLE') {
 			echo 'This will run only if the run was marked as unstable'
 		}
